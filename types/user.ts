@@ -1,116 +1,80 @@
-// types/user.ts
-
-export interface MediaItem {
-  id: number;
-  model_type: string;
-  model_id: number;
-  uuid: string;
-  collection_name: string;
-  name: string;
-  file_name: string;
-  mime_type: string;
-  disk: string;
-  conversions_disk: string;
-  size: number;
-  manipulations: unknown[];
-  custom_properties: unknown[];
-  generated_conversions: unknown[];
-  responsive_images: unknown[];
-  order_column: number;
-  created_at: string;
-  updated_at: string;
-  original_url: string;
-  preview_url: string;
-}
-
-export interface Anggota {
-  id: number;
-  reference: string;
-  ref_number: number;
-  user_id: number;
-  level_id: number;
-  name: string;
-  email: string;
-  province_id: string | null;
-  regency_id: string | null;
-  district_id: string | null;
-  village_id: string | null;
-  rt: number | null;
-  rw: number | null;
-  address: string | null;
-  postal_code: string | null;
-  ktp: string | null;
-  birth_place: string | null;
-  birth_date: string | null;
-  religion: string | null;
-  marital_status: string | null;
-  occupation: string | null;
-  last_education: string | null;
-  phone: string | null;
-  phone_home: string | null;
-  phone_office: string | null;
-  phone_faksimili: string | null;
-  facebook: string | null;
-  instagram: string | null;
-  twitter: string | null;
-  whatsapp: string | null;
-  tiktok: string | null;
-  path: string | null;
-  registered_at: string;
-  created_at: string;
-  updated_at: string;
-  gender: string | null;
-  ktp_file: string | null;
-  photo_file: string | null;
-  media: MediaItem[];
-}
-
-export interface RolePivot {
+export interface UserRolePivot {
   model_type: string;
   model_id: number;
   role_id: number;
 }
 
-export interface UserRole {
+export interface Role {
   id: number;
   name: string;
   guard_name: string;
   created_at: string;
   updated_at: string;
-  pivot: RolePivot;
-}
-
-export interface Refferal {
-  // ejaan mengikuti response: "refferal"
-  id: number;
-  user_id: number;
-  code: string;
-  level_1_refferals: number;
-  level_2_refferals: number;
-  level_3_refferals: number;
-  total_refferals: number;
-  created_at: string;
-  updated_at: string;
+  pivot?: UserRolePivot;
 }
 
 export interface User {
   id: number;
   name: string;
   email: string;
+  phone: string | null;
   email_verified_at: string | null;
+  phone_verified_at: string | null;
   created_at: string;
   updated_at: string;
-  anggota: Anggota | null;
-  roles: UserRole[];
-  refferal: Refferal | null;
-  referrer: unknown | null; // response saat ini null; disimpan apa adanya
+  roles: Role[];
+  // opsional – jika backend punya status
+  status?: boolean | number;
 }
 
-export interface AuthenticatedUser extends User {
-  token: string;
+export type Users = User;
+
+export interface ApiPaginated<T> {
+  current_page: number;
+  data: T[];
+  last_page: number;
+  total: number;
+  per_page: number;
 }
 
-export interface LoginResponse {
-  user: AuthenticatedUser;
-  expires: string;
+export interface PaginatedResponse<T> {
+  code: number;
+  message: string;
+  data: ApiPaginated<T>;
 }
+
+export interface ItemResponse<T> {
+  code: number;
+  message: string;
+  data: T;
+}
+
+export type UserListFilters = {
+  page?: number; // default 1
+  paginate?: number; // default 10
+  search?: string; // kata kunci
+  role_id?: number; // contoh: 2 (student)
+};
+
+export type CreateUserPayload = {
+  name: string;
+  email: string;
+  phone?: string | null;
+  password: string;
+  password_confirmation: string;
+  role_id: number; // role target saat create (contoh: 2)
+  status?: boolean | number; // ⬅️ ditambahkan
+};
+
+export type UpdateUserPayload = Partial<{
+  name: string;
+  email: string;
+  phone: string | null;
+  role_id: number;
+  status: boolean | number; // ⬅️ ditambahkan
+}>;
+
+export type UpdatePasswordPayload = {
+  password: string;
+  password_confirmation: string;
+};

@@ -59,7 +59,7 @@ export function KTACard() {
   if (userId == null) {
     return (
       <Card
-        onClick={() => router.push("/anggota/login")}
+        onClick={() => router.push("/siswa/login")}
         role="button"
         aria-label="Masuk untuk melihat KTA"
         className="relative w-full overflow-hidden rounded-xl shadow-xl border-0 text-[13px] p-6 cursor-pointer"

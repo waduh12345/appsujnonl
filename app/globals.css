@@ -17,8 +17,8 @@
   --secondary-foreground: oklch(0.99 0 0);
   --muted: oklch(0.95 0 0); /* very light gray */
   --muted-foreground: oklch(0.45 0 0);
-  --accent: oklch(0.98 0.06 27); /* subtle red tint */
-  --accent-foreground: oklch(0.32 0.18 27);
+  --accent: oklch(97.385% 0.0264 205.666); /* subtle sky tint */
+  --accent-foreground: oklch(42.528% 0.08622 231.477);
   --destructive: oklch(0.45 0.24 27);
   --destructive-foreground: oklch(0.99 0 0);
   --border: oklch(0.922 0 0);

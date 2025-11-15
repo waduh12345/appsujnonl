@@ -1,118 +1,61 @@
+// services/auth.service.ts
 import { apiSlice } from "./base-query";
-import { User } from "@/types/user";
+import type { User } from "@/types/user";
 
-// Define a type for the shipping cost payload and response
-interface ShippingCostPayload {
-  shop_id: number;
-  destination: string;
-  weight: number;
-  height: number;
-  length: number;
-  width: number;
-  diameter: number;
-  courier: string;
-}
-
-interface ShippingCostResponse {
-  name: string;
-  code: string;
-  service: string;
-  description: string;
-  cost: number;
-  etd: string;
-}
+type ApiEnvelope<T> = {
+  code: number;
+  message: string;
+  data: T;
+};
 
 export const authApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    // 🔑 Login
-    login: builder.mutation({
+    // POST /login
+    login: builder.mutation<
+      | { token: string; user: User }
+      | ApiEnvelope<{ token: string; user: User }>,
+      { email: string; password: string }
+    >({
       query: (credentials) => ({
         url: "/login",
         method: "POST",
         body: credentials,
       }),
+      // setelah login, tandai data /me sebagai stale
+      invalidatesTags: [{ type: "User", id: "ME" }],
     }),
 
-    // 📝 Register
-    register: builder.mutation({
-      query: (payload) => ({
-        url: "/register",
-        method: "POST",
-        body: payload,
-      }),
-    }),
-
-    // 📧 Resend Verification Email
-    resendVerification: builder.mutation<void, { email: string }>({
-      query: ({ email }) => ({
-        url: "/email/resend",
-        method: "POST",
-        body: { email },
-      }),
-    }),
-
-    // 🚪 Logout
+    // POST /logout
     logout: builder.mutation<void, void>({
       query: () => ({
         url: "/logout",
         method: "POST",
       }),
+      // setelah logout, tandai data /me sebagai stale
+      invalidatesTags: [{ type: "User", id: "ME" }],
     }),
 
-    // 👤 Get current user
-    getCurrentUser: builder.query<User, void>({
+    // GET /me
+    getMe: builder.query<User, void>({
       query: () => ({
         url: "/me",
         method: "GET",
       }),
-      transformResponse: (response: {
-        code: number;
-        message: string;
-        data: User;
-      }) => response.data,
-    }),
-
-    // ✏️ Update current user profile
-    updateCurrentUser: builder.mutation<User, FormData>({
-      query: (payload) => ({
-        url: "/me?_method=PUT",
-        method: "POST",
-        body: payload,
-      }),
-      transformResponse: (response: {
-        code: number;
-        message: string;
-        data: User;
-      }) => response.data,
-    }),
-
-    // 📦 Check shipping cost (newly added endpoint)
-    checkShippingCost: builder.query<ShippingCostResponse[], ShippingCostPayload>({
-      query: (payload) => ({
-        url: "/rajaongkir/cost",
-        method: "POST",
-        body: payload,
-      }),
-      transformResponse: (response: {
-        code: number;
-        message: string;
-        data: ShippingCostResponse[];
-      }) => {
-        if (response.code === 200) {
-          return response.data;
-        }
-        throw new Error(response.message || "Failed to fetch shipping costs.");
-      },
+      // terima dua kemungkinan bentuk response: langsung User atau amplop { code, message, data }
+      transformResponse: (res: User | ApiEnvelope<User>) =>
+        "data" in res ? res.data : res,
+      keepUnusedDataFor: 300,
+      // ✅ gunakan tag yang sudah terdaftar di apiSlice (mis. "User")
+      providesTags: (res) =>
+        res?.id != null
+          ? [
+              { type: "User" as const, id: "ME" },
+              { type: "User" as const, id: res.id },
+            ]
+          : [{ type: "User" as const, id: "ME" }],
     }),
   }),
+  overrideExisting: false,
 });
 
-export const {
-  useLoginMutation,
-  useRegisterMutation,
-  useResendVerificationMutation,
-  useLogoutMutation,
-  useGetCurrentUserQuery,
-  useUpdateCurrentUserMutation,
-  useCheckShippingCostQuery,
-} = authApi;
+export const { useLoginMutation, useLogoutMutation, useGetMeQuery } = authApi;

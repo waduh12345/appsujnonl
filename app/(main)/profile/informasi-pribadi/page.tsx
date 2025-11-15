@@ -341,7 +341,7 @@ export default function InformasiPribadiPage() {
     return (
       <div className="p-6">
         <p className="text-sm">Anda belum login.</p>
-        <Link href="/anggota/login">
+        <Link href="/siswa/login">
           <Button className="mt-3">Ke Halaman Login</Button>
         </Link>
       </div>

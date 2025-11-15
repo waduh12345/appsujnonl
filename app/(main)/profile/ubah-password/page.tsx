@@ -210,7 +210,7 @@ export default function UbahPasswordPage() {
               </p>
             </CardHeader>
             <CardContent>
-              <Link href="/anggota/login">
+              <Link href="/siswa/login">
                 <Button className="w-full">Ke Halaman Login</Button>
               </Link>
             </CardContent>

@@ -17,11 +17,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Digital KTA",
+  title: "CBT Qubic",
   description:
-    "Aplikasi keanggotaan digital untuk mengelola data anggota, status keanggotaan, dan berbagai layanan koperasi secara online.",
+    "Aplikasi ujian online untuk sekolah",
   icons: {
-    icon: "/digital-kta-logo.png",
+    icon: "/icon-qubic.jpg",
   },
 };
 
@@ -32,13 +32,13 @@ export default function RootLayout({
     <html lang="id">
       <head>
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#ff3b30" />
+        <meta name="theme-color" content="#30cfffff" />
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link
           rel="mask-icon"
           href="/icons/android-chrome-192x192.png"
-          color="#ff3b30"
+          color="#30cfffff"
         />
         <meta name="mobile-web-app-capable" content="yes" />
       </head>

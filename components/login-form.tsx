@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import Link from "next/link";
@@ -52,30 +51,33 @@ export default function LoginPage() {
     <div className="relative">
       {/* Decorative background elements */}
       <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-accent/5 rounded-full blur-3xl" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-sky-100 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-3xl" />
       </div>
 
       <Card className="border-border shadow-xl">
         <CardHeader className="space-y-2">
-          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-primary to-accent-foreground rounded-2xl flex items-center justify-center shadow-lg">
-            <Lock className="w-8 h-8 text-white" />
+          <div className="mx-auto w-16 h-16 bg-sky-500 rounded-2xl flex items-center justify-center shadow-lg">
+            <img src="/icon-qubic.jpg" alt="Qubic Logo" className="w-8 h-8" />
           </div>
-          <CardTitle className="text-2xl font-bold text-center">
-            Digital KTA
+          <CardTitle className="text-2xl font-bold text-center text-sky-600">
+            CBT Qubic
           </CardTitle>
-          <CardDescription className="text-center">
+          <CardDescription className="text-center text-sky-400">
             Masuk ke akun Anda untuk melanjutkan
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium">
+              <Label
+                htmlFor="email"
+                className="text-sm font-medium text-sky-600"
+              >
                 Email
               </Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sky-500" />
                 <Input
                   id="email"
                   type="email"
@@ -83,17 +85,20 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="h-12 pl-10"
+                  className="h-12 pl-10 border-sky-500"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium">
+              <Label
+                htmlFor="password"
+                className="text-sm font-medium text-sky-600"
+              >
                 Password
               </Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-sky-500" />
                 <Input
                   id="password"
                   type="password"
@@ -101,7 +106,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="h-12 pl-10"
+                  className="h-12 pl-10 border-sky-500"
                 />
               </div>
             </div>
@@ -113,7 +118,7 @@ export default function LoginPage() {
             <div className="flex justify-end">
               <Link
                 href="/forgot-password"
-                className="text-sm text-primary font-medium hover:underline"
+                className="text-sm text-sky-500 font-medium hover:underline"
               >
                 Lupa password?
               </Link>
@@ -121,7 +126,7 @@ export default function LoginPage() {
 
             <Button
               type="submit"
-              className="w-full h-12 font-semibold text-base group"
+              className="w-full h-12 font-semibold text-base group bg-sky-500 text-white hover:bg-sky-600"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -134,24 +139,14 @@ export default function LoginPage() {
               )}
             </Button>
 
-            <div className="relative">
+            {/* <div className="relative">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-card px-2 text-muted-foreground">Atau</span>
               </div>
-            </div>
-
-            <div className="text-center text-sm text-muted-foreground">
-              Belum punya akun?{" "}
-              <Link
-                href="/anggota/register"
-                className="text-primary font-semibold hover:underline"
-              >
-                Daftar sekarang
-              </Link>
-            </div>
+            </div> */}
           </form>
         </CardContent>
       </Card>
