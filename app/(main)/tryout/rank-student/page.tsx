@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Swal from "sweetalert2";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ import { formatDate } from "@/lib/format-utils";
 import { useGetParticipantHistoryListQuery } from "@/services/student/tryout.service";
 import type { ParticipantHistoryItem } from "@/types/student/tryout";
 
-export default function RankStudentPage() {
+function RankStudentPageContent() {
   const router = useRouter();
   const params = useSearchParams();
 
@@ -54,15 +54,15 @@ export default function RankStudentPage() {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4 md:p-0"> {/* Tambahkan padding di mobile */}
       {/* Hero (blue sky) */}
-      <section className="relative overflow-hidden rounded-3xl border bg-gradient-to-br from-sky-500 via-sky-400 to-sky-600 p-6 text-white shadow-lg ring-1 ring-white/20">
+      <section className="relative overflow-hidden rounded-3xl border bg-gradient-to-br from-sky-500 via-sky-400 to-sky-600 p-4 text-white shadow-lg ring-1 ring-white/20 md:p-6"> {/* Kurangi padding di mobile */}
         <div className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full bg-white/20 blur-2xl" />
         <div className="pointer-events-none absolute -left-8 bottom-0 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
 
-        <div className="relative flex items-center justify-between gap-3">
+        <div className="relative flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">
+            <h1 className="text-xl font-semibold tracking-tight md:text-2xl">
               Peringkat Tryout
             </h1>
             <p className="mt-1 text-sm text-white/90">
@@ -73,7 +73,7 @@ export default function RankStudentPage() {
           <Button
             variant="outline"
             onClick={() => router.back()}
-            className="bg-white/10 text-white hover:bg-white/20 border-white/30"
+            className="w-full sm:w-auto bg-white/10 text-white hover:bg-white/20 border-white/30 rounded-xl"
           >
             <ArrowLeft className="mr-2 h-4 w-4" /> Kembali
           </Button>
@@ -92,7 +92,7 @@ export default function RankStudentPage() {
               />
             </div>
           </div>
-          <div className="flex items-center justify-end gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-2"> {/* Gunakan flex-wrap di mobile */}
             <select
               className="h-9 rounded-md border-0 bg-white px-3 text-slate-900 shadow-sm outline-none ring-2 ring-transparent focus:ring-sky-300"
               value={paginate}
@@ -110,7 +110,7 @@ export default function RankStudentPage() {
             <Button
               variant="outline"
               onClick={() => refetch()}
-              className="bg-white/10 text-white hover:bg-white/20 border-white/30"
+              className="bg-white/10 text-white hover:bg-white/20 border-white/30 rounded-xl"
             >
               {isFetching ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -125,16 +125,17 @@ export default function RankStudentPage() {
 
       {/* Tabel (putih) */}
       <section className="rounded-3xl border bg-white p-4 shadow-sm ring-1 ring-sky-50">
-        <div className="rounded-xl border overflow-x-auto">
+        <div className="rounded-xl border overflow-x-auto"> {/* Pastikan overflow-x-auto */}
           <table className="w-full text-sm">
             <thead className="bg-sky-50 text-sky-900">
               <tr className="text-left">
-                <th className="p-3">No</th>
-                <th className="p-3">Peserta</th>
-                <th className="p-3">Email</th>
-                <th className="p-3">Status</th>
-                <th className="p-3">Mulai</th>
-                <th className="p-3">Selesai</th>
+                <th className="p-3 whitespace-nowrap">No</th>
+                <th className="p-3 whitespace-nowrap">Peserta</th>
+                <th className="p-3 whitespace-nowrap hidden sm:table-cell">Email</th> {/* Sembunyikan Email di mobile kecil */}
+                <th className="p-3 whitespace-nowrap text-center">Status</th>
+                <th className="p-3 whitespace-nowrap hidden md:table-cell">Mulai</th> {/* Sembunyikan Mulai di mobile kecil */}
+                <th className="p-3 whitespace-nowrap hidden md:table-cell">Selesai</th> {/* Sembunyikan Selesai di mobile kecil */}
+                <th className="p-3 whitespace-nowrap text-center">Nilai</th> {/* Tambahkan kolom Nilai */}
               </tr>
             </thead>
             <tbody>
@@ -150,12 +151,16 @@ export default function RankStudentPage() {
                   const isCompleted = Boolean(r.end_date);
                   return (
                     <tr key={r.id} className="border-t hover:bg-sky-50/40">
-                      <td className="p-3 font-medium text-sky-900">
+                      <td className="p-3 font-medium text-sky-900 whitespace-nowrap">
                         {rankNumber}
                       </td>
-                      <td className="p-3">{r.participant_name}</td>
-                      <td className="p-3">{r.participant_email}</td>
-                      <td className="p-3">
+                      <td className="p-3 whitespace-nowrap">
+                        <div className="font-medium">{r.participant_name}</div>
+                        {/* Tampilkan email di bawah nama di mobile */}
+                        <div className="text-xs text-zinc-500 sm:hidden">{r.participant_email}</div>
+                      </td>
+                      <td className="p-3 hidden sm:table-cell whitespace-nowrap">{r.participant_email}</td>
+                      <td className="p-3 text-center whitespace-nowrap">
                         {isCompleted ? (
                           <Badge className="bg-sky-600 text-white hover:bg-sky-700">
                             Finished
@@ -169,18 +174,21 @@ export default function RankStudentPage() {
                           </Badge>
                         )}
                       </td>
-                      <td className="p-3">
+                      <td className="p-3 hidden md:table-cell whitespace-nowrap">
                         {r.start_date ? formatDate(r.start_date) : "-"}
                       </td>
-                      <td className="p-3">
+                      <td className="p-3 hidden md:table-cell whitespace-nowrap">
                         {r.end_date ? formatDate(r.end_date) : "-"}
+                      </td>
+                      <td className="p-3 font-semibold text-center whitespace-nowrap">
+                        {r.grade ?? "-"}
                       </td>
                     </tr>
                   );
                 })
               ) : (
                 <tr>
-                  <td className="p-4" colSpan={7}>
+                  <td className="p-4 text-center text-zinc-600" colSpan={7}>
                     Tidak ada data.
                   </td>
                 </tr>
@@ -198,5 +206,13 @@ export default function RankStudentPage() {
         </div>
       </section>
     </div>
+  );
+}
+
+export default function RankStudentPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <RankStudentPageContent />
+    </Suspense>
   );
 }

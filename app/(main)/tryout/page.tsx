@@ -39,20 +39,23 @@ export default function TryoutListPage() {
   const [page, setPage] = useState<number>(1);
   const [q, setQ] = useState<string>("");
 
+  // Debounce state untuk pencarian
+  const [searchQuery, setSearchQuery] = useState("");
+
   const { data, isFetching, isLoading } = useGetTestListQuery({
     page,
     paginate: PER_PAGE,
-    search: q,
+    search: searchQuery, // Gunakan searchQuery yang sudah di-debounce
     is_active: 1
   });
 
-  // ongoing & completed (pakai service history)
-  const { data: ongoing } = useGetParticipantHistoryListQuery({
+  // ongoing & completed (pakai service history) - Ambil status loading
+  const { data: ongoing, isLoading: loadingOngoing } = useGetParticipantHistoryListQuery({
     page: 1,
     paginate: 10,
     is_ongoing: 1,
   });
-  const { data: completed } = useGetParticipantHistoryListQuery({
+  const { data: completed, isLoading: loadingCompleted } = useGetParticipantHistoryListQuery({
     page: 1,
     paginate: 10,
     is_completed: 1,
@@ -78,9 +81,16 @@ export default function TryoutListPage() {
   const total = data?.total ?? 0;
   const lastPage = data?.last_page ?? 1;
   const working = isLoading || isFetching;
+  
+  // Status loading total (termasuk history)
+  const loadingAll = working || loadingOngoing || loadingCompleted;
 
+  // Debounce search
   useEffect(() => {
-    const t = setTimeout(() => setPage(1), 250);
+    const t = setTimeout(() => {
+      setSearchQuery(q.trim());
+      setPage(1); // Reset page on new search
+    }, 350);
     return () => clearTimeout(t);
   }, [q]);
 
@@ -123,7 +133,7 @@ export default function TryoutListPage() {
   }
 
   return (
-    <div className="space-y-8 py-6">
+    <div className="space-y-8 p-4 md:p-0"> {/* Tambahkan padding di mobile */}
       {/* Hero */}
       <section className="relative overflow-hidden rounded-3xl border bg-gradient-to-br from-sky-500 via-sky-400 to-sky-600 p-6 text-white shadow-lg ring-1 ring-white/20">
         <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-white/15 blur-2xl" />
@@ -136,7 +146,7 @@ export default function TryoutListPage() {
             Pilih paket tryout dan mulai kerjakan secara real-time.
           </p>
 
-          <div className="mt-4 max-w-xl">
+          <div className="mt-4 max-w-full md:max-w-xl"> {/* Lebar penuh di mobile */}
             <div className="relative">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 opacity-80" />
               <Input
@@ -151,14 +161,16 @@ export default function TryoutListPage() {
       </section>
 
       {/* Grid Cards */}
-      <section className="grid grid-cols-2 gap-6">
-        {working && !items.length
+      <section className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"> {/* Ubah ke 1 kolom di mobile, 2 di sm, 3 di lg */}
+        
+        {/* Shimmer/Loading State */}
+        {loadingAll && !items.length
           ? Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="rounded-2xl border bg-white p-6 shadow-sm"
+                className="rounded-2xl border bg-white p-4 shadow-sm md:p-6"
               >
-                <div className="h-28 animate-pulse rounded-xl bg-zinc-100" />
+                <div className="h-24 animate-pulse rounded-xl bg-zinc-100 md:h-28" />
                 <div className="mt-3 h-4 w-2/3 animate-pulse rounded bg-zinc-100" />
                 <div className="mt-2 h-3 w-1/3 animate-pulse rounded bg-zinc-100" />
                 <div className="mt-5 h-9 w-full animate-pulse rounded-lg bg-zinc-100" />
@@ -168,11 +180,13 @@ export default function TryoutListPage() {
               const contId = ongoingMap.get(t.id);
               const isContinuable = !!contId;
               const isCompleted = completedSet.has(t.id);
+              
+              const isDisabled = starting || isCompleted || loadingAll;
 
               return (
                 <article
                   key={t.id}
-                  className="group relative overflow-hidden rounded-2xl border bg-white p-6 shadow-sm ring-1 ring-zinc-200/70 transition hover:-translate-y-0.5 hover:shadow-md"
+                  className="group relative overflow-hidden rounded-2xl border bg-white p-4 shadow-sm ring-1 ring-zinc-200/70 transition hover:-translate-y-0.5 hover:shadow-md md:p-6"
                 >
                   <div className="absolute right-4 top-4 rounded-xl bg-sky-50 p-2 text-sky-600 ring-1 ring-sky-100/70">
                     <FolderOpen className="h-5 w-5" />
@@ -185,64 +199,65 @@ export default function TryoutListPage() {
                     {t.sub_title ?? "-"}
                   </p>
 
-                  <div className="mt-4 grid grid-cols-2 gap-4 text-xs text-zinc-600">
+                  <div className="mt-4 grid grid-cols-2 gap-3 text-xs text-zinc-600"> {/* Kurangi gap */}
                     <div className="inline-flex items-center gap-2 rounded-lg bg-zinc-50 px-3 py-2 ring-1 ring-zinc-200/70">
                       <Clock3 className="h-4 w-4 text-sky-600" />
-                      <span>
-                        Durasi:{" "}
-                        <strong className="text-zinc-800">
+                      <div className="flex flex-col min-w-0">
+                        <span className="truncate">Durasi:</span>
+                        <strong className="text-zinc-800 truncate">
                           {t.timer_type === "per_category"
                             ? "Per kategori"
                             : formatDurationFromSeconds(t.total_time)}
                         </strong>
-                      </span>
+                      </div>
                     </div>
                     <div className="inline-flex items-center gap-2 rounded-lg bg-zinc-50 px-3 py-2 ring-1 ring-zinc-200/70">
                       <ListChecks className="h-4 w-4 text-sky-600" />
-                      <span>
-                        Soal:{" "}
-                        <strong className="text-zinc-800">
+                      <div className="flex flex-col min-w-0">
+                        <span className="truncate">Soal:</span>
+                        <strong className="text-zinc-800 truncate">
                           {t.total_questions ?? 0}
                         </strong>
-                      </span>
+                      </div>
                     </div>
                   </div>
 
                   <div className="mt-5 grid grid-cols-1 gap-2">
-                    {/* <Button
-                      variant="outline"
-                      className="justify-center gap-2"
-                      asChild
-                    >
-                      <Link href={`/tryout/result/${t.id}`}>
-                        <BarChart3 className="h-4 w-4" />
-                        Hasil Tryout
-                      </Link>
-                    </Button> */}
-
                     {isContinuable ? (
                       <Button
                         onClick={() => handleContinue(contId!)}
-                        className="justify-center gap-2 rounded-xl bg-sky-600 hover:bg-sky-700"
+                        disabled={loadingOngoing}
+                        className="justify-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600" // Warna kontras untuk Continue
                       >
-                        <RotateCcw className="h-4 w-4" />
-                        Lanjutkan Tryout
+                         {loadingOngoing ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            Memuat...
+                          </>
+                        ) : (
+                          <>
+                            <RotateCcw className="h-4 w-4" />
+                            Lanjutkan Tryout
+                          </>
+                        )}
                       </Button>
                     ) : (
                       <Button
                         onClick={() => handleStart(t.id)}
-                        disabled={starting || isCompleted}
+                        disabled={isDisabled}
                         title={
                           isCompleted
                             ? "Tryout ini sudah diselesaikan"
+                            : loadingAll
+                            ? "Memuat status tryout..."
                             : undefined
                         }
                         className="justify-center gap-2 rounded-lg bg-sky-600 hover:bg-sky-700 disabled:bg-sky-300"
                       >
-                        {starting ? (
+                        {starting || loadingAll ? (
                           <>
                             <Loader2 className="h-4 w-4 animate-spin" />
-                            Memulai...
+                            {starting ? "Memulai..." : "Memuat status..."}
                           </>
                         ) : (
                           <>
@@ -253,8 +268,8 @@ export default function TryoutListPage() {
                       </Button>
                     )}
                     <Button
-                      variant="skyblue"
-                      className="w-full justify-center gap-2"
+                      variant="outline"
+                      className="w-full justify-center gap-2 rounded-lg border-sky-300 text-sky-700 hover:bg-sky-50"
                       asChild
                     >
                       <Link href={`/tryout/rank-student?test_id=${t.id}`}>
@@ -263,15 +278,11 @@ export default function TryoutListPage() {
                       </Link>
                     </Button>
                   </div>
-
-                  {/* Tombol Peringkat */}
-                  {/* <div className="mt-2">
-                  </div> */}
                 </article>
               );
             })}
 
-        {!working && items.length === 0 && (
+        {!loadingAll && items.length === 0 && (
           <div className="col-span-full rounded-2xl border bg-white p-10 text-center text-zinc-600">
             Tidak ada tryout yang tersedia.
           </div>
@@ -280,7 +291,7 @@ export default function TryoutListPage() {
 
       {/* Pagination */}
       {lastPage > 1 && (
-        <nav className="flex items-center justify-between rounded-2xl border bg-white p-3 shadow-sm">
+        <nav className="flex flex-col gap-3 items-center justify-between rounded-2xl border bg-white p-3 shadow-sm sm:flex-row">
           <div className="text-sm text-zinc-600">
             Total {total} data • Halaman {page} dari {lastPage}
           </div>

@@ -8,23 +8,15 @@ import type { ParticipantHistoryItem } from "@/types/student/tryout";
 import { useSession } from "next-auth/react";
 
 const CARD_STYLES = `
-  /* Paksa browser mencetak warna & background */
+  /* ===================== BASE & PRINT ===================== */
   html, body {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
-
-  .student-card-root,
-  .student-card-header,
-  .student-card-body,
-  .student-card-box,
-  .student-card-photo-frame,
-  .student-card-idchip,
-  .student-card-badge-inner {
+  .student-card-root, .student-card-header, .student-card-body, .student-card-box, .student-card-photo-frame, .student-card-idchip, .student-card-badge-inner {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
-
   .student-card-root {
     width: 100%;
     max-width: 720px;
@@ -32,22 +24,21 @@ const CARD_STYLES = `
     border: 2px solid #e2e8f0;
     overflow: hidden;
     background: #ffffff;
-    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16);
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12); /* Adjusted shadow */
     font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
     color: #0f172a;
   }
-
   .student-card-inner {
     display: flex;
     flex-direction: column;
     height: 100%;
   }
 
-  /* HEADER: oranye -> biru seperti logo */
+  /* ===================== HEADER ===================== */
   .student-card-header {
-    padding: 18px 22px;
+    padding: 16px 20px; /* Reduced padding */
     background: linear-gradient(120deg, #f97316 0%, #f59e0b 24%, #2563eb 68%, #1d4ed8 100%);
-    background-color: #2563eb; /* fallback jika gradient di-remove */
+    background-color: #2563eb;
     color: #f9fafb;
     display: flex;
     align-items: center;
@@ -55,301 +46,285 @@ const CARD_STYLES = `
     gap: 12px;
     position: relative;
   }
-
   .student-card-header-left {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px; /* Adjusted gap */
   }
-
-  /* Logo kubus oranye */
   .student-card-logo {
-    width: 52px;
-    height: 52px;
-    border-radius: 16px;
+    width: 48px; /* Reduced size */
+    height: 48px; /* Reduced size */
+    border-radius: 12px; /* Adjusted border radius */
     background: linear-gradient(135deg, #facc15 0%, #f97316 40%, #ea580c 80%);
     display: flex;
     align-items: center;
     justify-content: center;
     color: #0f172a;
     font-weight: 900;
-    font-size: 13px;
+    font-size: 12px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    box-shadow:
-      0 10px 30px rgba(15, 23, 42, 0.55),
-      inset 0 0 0 1px rgba(15, 23, 42, 0.4);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.45); /* Adjusted shadow */
   }
-
   .student-card-school-block {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 1px; /* Reduced gap */
   }
-
   .student-card-school-name {
-    font-size: 14px;
+    font-size: 13px; /* Reduced font size */
     font-weight: 800;
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
-
   .student-card-exam-name {
-    font-size: 9px;
+    font-size: 8px; /* Reduced font size */
     font-weight: 600;
     opacity: 0.95;
   }
-
   .student-card-exam-year {
-    font-size: 8px;
+    font-size: 7px; /* Reduced font size */
     opacity: 0.9;
   }
-
   .student-card-header-right {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 6px;
+    gap: 4px; /* Reduced gap */
   }
-
   .student-card-exam-tag {
-    padding: 4px 10px;
+    padding: 3px 8px; /* Reduced padding */
     border-radius: 999px;
     background: rgba(15, 23, 42, 0.26);
     border: 1px solid rgba(254, 249, 195, 0.9);
-    font-size: 11px;
+    font-size: 10px; /* Reduced font size */
     font-weight: 600;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px; /* Reduced gap */
   }
-
   .student-card-exam-tag-dot {
-    width: 8px;
-    height: 8px;
+    width: 6px; /* Reduced size */
+    height: 6px; /* Reduced size */
     border-radius: 999px;
     background: #22c55e;
-    box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.35);
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.25); /* Adjusted shadow */
   }
 
-  .student-card-header-watermark {
-    position: absolute;
-    right: -16px;
-    bottom: -40px;
-    width: 140px;
-    height: 140px;
-    border-radius: 999px;
-    background: radial-gradient(circle at 30% 0%, rgba(248, 250, 252, 0.85) 0%, rgba(59, 130, 246, 0.4) 40%, transparent 70%);
-    opacity: 0.35;
-    pointer-events: none;
-  }
-
-  /* BODY: latar lembut oranye + biru */
+  /* ===================== BODY ===================== */
   .student-card-body {
-    padding: 18px 22px 16px 22px;
+    padding: 16px 20px 14px 20px; /* Reduced padding */
     background: radial-gradient(130% 140% at 0% 0%, #fff7ed 0%, #ffffff 55%, #e0f2fe 100%);
     background-color: #fff7ed;
   }
-
   .student-card-box {
-    border-radius: 16px;
+    border-radius: 14px; /* Adjusted border radius */
     border: 1px solid #e5e7eb;
     background: radial-gradient(120% 120% at 0% 0%, #fffbeb 0%, #ffffff 45%, #eff6ff 100%);
     background-color: #fffbeb;
-    padding: 18px 18px 14px 18px;
+    padding: 16px 16px 12px 16px; /* Reduced padding */
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px; /* Reduced gap */
   }
-
   .student-card-row {
     display: flex;
-    flex-wrap: wrap;
-    gap: 18px;
+    flex-wrap: nowrap; /* Prevent wrap by default */
+    gap: 16px; /* Reduced gap */
   }
-
   .student-card-col-main {
     flex: 1 1 0;
     min-width: 0;
   }
-
   .student-card-divider {
     height: 1px;
     width: 100%;
-    margin-bottom: 8px;
+    margin-bottom: 6px; /* Reduced margin */
     background: linear-gradient(to right, transparent 0%, #fed7aa 15%, #bfdbfe 85%, transparent 100%);
   }
-
   .student-card-kv {
     display: grid;
-    grid-template-columns: 135px minmax(0, 1fr);
+    grid-template-columns: 100px minmax(0, 1fr); /* Reduced label width */
     align-items: baseline;
-    gap: 2px;
-    margin: 3px 0;
+    gap: 1px;
+    margin: 2px 0; /* Reduced margin */
   }
-
   .student-card-k {
-    font-size: 9px;
+    font-size: 8px; /* Reduced font size */
     color: #6b7280;
   }
-
   .student-card-v {
-    font-size: 9px;
+    font-size: 8px; /* Reduced font size */
     font-weight: 700;
     color: #111827;
   }
-
   .student-card-col-side {
     flex: 0 0 auto;
-    width: 150px;
+    width: 120px; /* Adjusted width */
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 10px;
+    gap: 8px; /* Reduced gap */
   }
-
-  /* FRAME FOTO: biru gradient */
   .student-card-photo-frame {
-    width: 100px;
-    height: 120px;
-    border-radius: 18px;
+    width: 85px; /* Reduced size */
+    height: 105px; /* Reduced size */
+    border-radius: 16px; /* Adjusted border radius */
     background: linear-gradient(150deg, #0ea5e9 0%, #2563eb 45%, #1e40af 80%);
     background-color: #2563eb;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #e5e7eb;
-    font-size: 11px;
+    font-size: 10px; /* Reduced font size */
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.16em;
-    box-shadow: 0 14px 30px rgba(30, 64, 175, 0.55);
+    letter-spacing: 0.12em;
+    box-shadow: 0 10px 20px rgba(30, 64, 175, 0.45); /* Adjusted shadow */
     position: relative;
     overflow: hidden;
   }
-
   .student-card-photo-frame svg {
+    width: 30px; /* Reduced size */
+    height: 30px; /* Reduced size */
     opacity: 0.9;
   }
-
   .student-card-photo-overlay-label {
     position: absolute;
-    bottom: 8px;
-    inset-inline: 10px;
+    bottom: 6px; /* Adjusted position */
+    inset-inline: 8px; /* Adjusted position */
     border-radius: 999px;
     background: rgba(15, 23, 42, 0.65);
-    padding: 3px 7px;
-    font-size: 10px;
+    padding: 2px 5px; /* Reduced padding */
+    font-size: 8px; /* Reduced font size */
     text-align: center;
   }
-
-  /* CHIP NOMOR PESERTA: oranye + biru */
   .student-card-idchip {
-    margin-top: 4px;
-    padding: 6px 10px;
+    margin-top: 2px; /* Reduced margin */
+    padding: 5px 8px; /* Reduced padding */
     border-radius: 999px;
     background: #fffbeb;
     border: 1px solid #fed7aa;
-    font-size: 11px;
+    font-size: 10px; /* Reduced font size */
     display: inline-flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 2px;
+    gap: 1px;
   }
-
   .student-card-idchip span {
-    font-size: 10px;
+    font-size: 9px; /* Reduced font size */
     text-transform: uppercase;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.12em;
     color: #9ca3af;
   }
-
   .student-card-idchip strong {
-    font-size: 12px;
-    letter-spacing: 0.06em;
+    font-size: 11px; /* Reduced font size */
+    letter-spacing: 0.05em;
     color: #ea580c;
   }
 
-  /* FOOTER */
+  /* ===================== FOOTER ===================== */
   .student-card-footer {
-    padding: 10px 22px 16px 22px;
+    padding: 8px 20px 14px 20px; /* Reduced padding */
     background: #f9fafb;
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    gap: 16px;
+    gap: 12px; /* Reduced gap */
     border-top: 1px solid #e5e7eb;
   }
-
   .student-card-note {
-    font-size: 8px;
+    font-size: 7px; /* Reduced font size */
     color: #6b7280;
-    max-width: 70%;
+    max-width: 65%; /* Adjusted width */
   }
-
   .student-card-signature {
-    min-width: 180px;
+    min-width: 140px; /* Reduced width */
     text-align: right;
-    font-size: 10px;
+    font-size: 9px; /* Reduced font size */
     color: #6b7280;
   }
-
   .student-card-signature-label {
-    margin-bottom: 22px;
+    margin-bottom: 18px; /* Reduced margin */
   }
-
   .student-card-signature-line {
     border-bottom: 1px dashed #9ca3af;
-    margin-top: 12px;
+    margin-top: 10px; /* Reduced margin */
   }
 
-  .student-card-badge-bottom {
-    margin-top: 8px;
-    display: flex;
-    justify-content: flex-end;
-  }
-
-  .student-card-badge-inner {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: #e0f2fe;
-    background-color: #e0f2fe;
-    border: 1px solid #bae6fd;
-    font-size: 11px;
-    color: #0369a1;
-    font-weight: 600;
-  }
-
-  .student-card-badge-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 999px;
-    background: #0ea5e9;
-  }
-
+  /* ===================== MOBILE RESPONSIVENESS (<= 640px) ===================== */
   @media (max-width: 640px) {
-    .student-card-body {
-      padding: 14px 14px 12px 14px;
+    .student-card-root {
+        border-radius: 12px;
+        box-shadow: 0 6px 15px rgba(15, 23, 42, 0.08);
     }
     .student-card-header {
-      padding: 14px 14px;
+      padding: 12px 14px;
       flex-direction: column;
       align-items: flex-start;
+      gap: 8px;
+    }
+    .student-card-header-left {
+        gap: 10px;
+    }
+    .student-card-logo {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+    }
+    .student-card-school-name {
+        font-size: 11px;
     }
     .student-card-header-right {
       align-items: flex-start;
     }
+    .student-card-header-watermark {
+        display: none;
+    }
+
+    .student-card-body {
+      padding: 12px;
+    }
+    .student-card-box {
+        padding: 12px;
+        border-radius: 12px;
+    }
     .student-card-row {
-      flex-direction: column;
+      flex-direction: column; /* Stack main and side column */
+      gap: 10px;
     }
     .student-card-col-side {
       width: 100%;
-      flex-direction: row;
-      align-items: center;
+      flex-direction: row-reverse; /* Put photo on the right */
+      align-items: flex-start; /* Align elements to start of row */
       justify-content: space-between;
+    }
+    .student-card-photo-frame {
+        width: 75px;
+        height: 95px;
+        margin-left: 0;
+    }
+    .student-card-idchip {
+        margin-top: 0;
+        align-items: flex-start;
+    }
+    .student-card-divider {
+        margin-bottom: 4px;
+    }
+
+    .student-card-footer {
+      padding: 8px 14px 12px 14px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .student-card-note {
+        max-width: 100%;
+        font-size: 8px;
+    }
+    .student-card-signature {
+        width: 100%;
+        text-align: left;
     }
   }
 `;
@@ -376,17 +351,17 @@ export default function DashboardPage() {
   const nameUser = user?.name;
   const emailUser = user?.email;
 
-  // Add student data for the card
+  // Data siswa dummy/placeholder:
   const student = {
     id: user?.id ?? 0,
-    nim: "12345", // example NIM, replace with real data
-    name: user?.name ?? "—",
-    email: user?.email ?? "—",
-    class_name: "Class A", // Replace with actual class data
-    school_name: "My School", // Replace with actual school name
-    session: "Session 1", // Replace with actual session data
-    room: "Room 101", // Replace with actual room number
-    password: "password123", // Replace with actual password
+    nim: "12345678",
+    name: user?.name ?? "Nama Peserta",
+    email: user?.email ?? "email@example.com",
+    class_name: "XII IPA 1",
+    school_name: "SMAN 1 Jakarta",
+    session: "Sesi 1",
+    room: "R. 101",
+    password: "PASS123",
   };
 
   // query hanya jalan kalau user ada
@@ -417,15 +392,13 @@ export default function DashboardPage() {
     return items.slice(0, 5);
   }, [history]);
 
-  const totalHistory = history?.total ?? 0;
-
   if (!user) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center p-4">
         <div className="rounded-2xl border bg-white/80 px-5 py-4 text-center shadow-sm">
           <p className="text-sm text-zinc-700">
-            Kamu belum masuk. Silakan login agar data dashboard dapat dimuat
-            dari session.
+            Kamu belum masuk. Silakan login agar data dashboard dapat dimuat dari
+            session.
           </p>
         </div>
       </div>
@@ -433,18 +406,18 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen p-4 md:p-0"> {/* Tambahkan padding di mobile */}
       <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-6 py-6">
-        {/* Welcome */}
+        {/* Welcome Header */}
         <div>
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-3">
-              <div className="inline-grid h-11 w-11 place-items-center rounded-xl bg-sky-500 text-white ring-1 ring-sky-200">
+              <div className="inline-grid h-10 w-10 place-items-center rounded-xl bg-sky-500 text-white ring-1 ring-sky-200">
                 <User2 className="h-5 w-5" />
               </div>
               <div className="min-w-0">
                 <p className="truncate text-lg font-semibold md:text-xl">
-                  Selamat Datang {nameUser}
+                  Selamat Datang {nameUser} 👋
                 </p>
                 <p className="truncate text-sm text-sky-700">{emailUser}</p>
               </div>
@@ -452,11 +425,11 @@ export default function DashboardPage() {
           </div>
 
           {/* Kartu Peserta langsung tampil di dashboard */}
-          <div className="pt-2">
-            {/* Directly using the existing CSS for the card */}
+          <div className="pt-4">
+            <h2 className="text-lg font-semibold mb-3">Kartu Peserta Ujian</h2>
             <style dangerouslySetInnerHTML={{ __html: CARD_STYLES }} />
 
-            {/* Tampilkan kartu siswa langsung */}
+            {/* Student Card Component */}
             <div className="student-card-root">
               <div className="student-card-inner">
                 <div className="student-card-header">
@@ -480,6 +453,7 @@ export default function DashboardPage() {
                       <span>RESMI • UJIAN SEKOLAH</span>
                     </div>
                   </div>
+                  <div className="student-card-header-watermark"></div>
                 </div>
 
                 <div className="student-card-body">
@@ -542,6 +516,10 @@ export default function DashboardPage() {
                             Foto 3x4
                           </div>
                         </div>
+                        <div className="student-card-idchip">
+                          <span>Nomor Peserta</span>
+                          <strong>{student.nim}</strong>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -550,8 +528,8 @@ export default function DashboardPage() {
                 <div className="student-card-footer">
                   <div className="student-card-note">
                     Harap kartu ini dibawa dan ditunjukkan kepada pengawas pada
-                    saat ujian berlangsung. Kartu berlaku untuk seluruh
-                    rangkaian ujian pada Tahun Pelajaran 2023/2024.
+                    saat ujian berlangsung. Kartu berlaku untuk seluruh rangkaian
+                    ujian pada Tahun Pelajaran 2023/2024.
                   </div>
                   <div className="student-card-signature">
                     <div className="student-card-signature-label">
@@ -580,13 +558,14 @@ export default function DashboardPage() {
             <table className="min-w-full text-sm">
               <thead>
                 <tr className="bg-sky-50/60 text-zinc-700">
-                  <Th>Test</Th>
-                  <Th>Mulai</Th>
-                  <Th>Selesai</Th>
-                  <Th>Status</Th>
+                  <Th align="left">Test</Th>
+                  <Th align="left" className="hidden sm:table-cell">Mulai</Th>
+                  <Th align="left" className="hidden sm:table-cell">Selesai</Th>
+                  <Th align="left">Status</Th>
                 </tr>
               </thead>
               <tbody>
+                {/* Skeleton Loading */}
                 {isLoading &&
                   Array.from({ length: 5 }).map((_, i) => (
                     <tr
@@ -594,13 +573,13 @@ export default function DashboardPage() {
                       className={i % 2 ? "bg-zinc-50/40" : "bg-white/50"}
                     >
                       <Td>
-                        <div className="h-4 w-56 animate-pulse rounded bg-zinc-200" />
-                      </Td>
-                      <Td>
                         <div className="h-4 w-40 animate-pulse rounded bg-zinc-200" />
                       </Td>
-                      <Td>
-                        <div className="h-4 w-40 animate-pulse rounded bg-zinc-200" />
+                      <Td className="hidden sm:table-cell">
+                        <div className="h-4 w-24 animate-pulse rounded bg-zinc-200" />
+                      </Td>
+                      <Td className="hidden sm:table-cell">
+                        <div className="h-4 w-24 animate-pulse rounded bg-zinc-200" />
                       </Td>
                       <Td>
                         <div className="h-5 w-16 animate-pulse rounded bg-zinc-200" />
@@ -608,6 +587,7 @@ export default function DashboardPage() {
                     </tr>
                   ))}
 
+                {/* Error/No Data States */}
                 {isError && (
                   <tr>
                     <Td colSpan={4}>
@@ -615,7 +595,6 @@ export default function DashboardPage() {
                     </Td>
                   </tr>
                 )}
-
                 {!isLoading && !isError && latestTop5.length === 0 && (
                   <tr>
                     <Td colSpan={4}>
@@ -626,6 +605,7 @@ export default function DashboardPage() {
                   </tr>
                 )}
 
+                {/* Data Rows */}
                 {!isLoading &&
                   !isError &&
                   latestTop5.map((r, i) => {
@@ -640,9 +620,15 @@ export default function DashboardPage() {
                             <span className="h-2 w-2 rounded-full bg-indigo-500/70" />
                             {r.test_details?.title ?? "—"}
                           </span>
+                          {/* Tampilkan waktu mulai di mobile */}
+                          <div className="text-xs text-zinc-500 mt-0.5 sm:hidden">
+                            {formatDateTime(r.start_date)}
+                          </div>
                         </Td>
-                        <Td>{formatDateTime(r.start_date)}</Td>
-                        <Td>
+                        <Td className="hidden sm:table-cell">
+                          {formatDateTime(r.start_date)}
+                        </Td>
+                        <Td className="hidden sm:table-cell">
                           {formatDateTime(r.end_date ?? r.updated_at ?? null)}
                         </Td>
                         <Td>
@@ -654,7 +640,7 @@ export default function DashboardPage() {
                             }`}
                           >
                             <span className="h-1.5 w-1.5 rounded-full bg-current/70" />
-                            {isDone ? "Selesai" : "Sedang dikerjakan"}
+                            {isDone ? "Selesai" : "Proses"}
                           </span>
                         </Td>
                       </tr>
@@ -669,130 +655,51 @@ export default function DashboardPage() {
   );
 }
 
-/** ===== UI bits ===== */
-function Card({
-  tone,
-  title,
-  value,
-  subtitle,
-  icon,
-}: {
-  tone: "sky" | "indigo" | "soft";
-  title: string;
-  value: string;
-  subtitle?: string;
-  icon?: ReactNode;
-}) {
-  const theme =
-    tone === "sky"
-      ? {
-          wrap: "bg-sky-100/70 ring-sky-200/70",
-          value: "text-sky-700",
-          chip: "bg-white/60 text-sky-700 ring-1 ring-white/70",
-        }
-      : tone === "indigo"
-      ? {
-          wrap: "bg-indigo-700 text-white ring-indigo-800/60",
-          value: "text-white",
-          chip: "bg-white/10 text-white/90 ring-1 ring-white/20",
-        }
-      : {
-          wrap: "bg-zinc-100/70 ring-zinc-200/80",
-          value: "text-zinc-900",
-          chip: "bg-sky-600/10 text-sky-700 ring-1 ring-sky-600/20",
-        };
+/** ===== UI bits (Adjusted for responsiveness) ===== */
 
-  return (
-    <div className={`rounded-2xl p-4 ring-1 shadow-sm ${theme.wrap}`}>
-      <div className="flex items-start gap-3">
-        <div className="flex-1">
-          <p className="text-sm/5 font-medium opacity-80">{title}</p>
-          <div className={`mt-1 text-4xl font-semibold ${theme.value}`}>
-            {value}
-          </div>
-          {subtitle && <p className="mt-1 text-xs opacity-80">{subtitle}</p>}
-        </div>
-        {icon && <div className={`rounded-xl p-2 ${theme.chip}`}>{icon}</div>}
-      </div>
-    </div>
-  );
-}
-
-function InfoCard({
-  title,
-  description,
-  tone = "sky",
-}: {
-  title: string;
-  description: string;
-  tone?: "sky" | "indigo" | "zinc";
-}) {
-  const toneMap: Record<
-    typeof tone,
-    { wrap: string; title: string; desc: string }
-  > = {
-    sky: {
-      wrap: "bg-sky-50/80 ring-1 ring-sky-100",
-      title: "text-sky-900",
-      desc: "text-sky-700/80",
-    },
-    indigo: {
-      wrap: "bg-indigo-50/80 ring-1 ring-indigo-100",
-      title: "text-indigo-900",
-      desc: "text-indigo-700/80",
-    },
-    zinc: {
-      wrap: "bg-zinc-50/80 ring-1 ring-zinc-100",
-      title: "text-zinc-900",
-      desc: "text-zinc-700/80",
-    },
-  };
-
-  const t = toneMap[tone];
-
-  return (
-    <div className={`rounded-2xl p-4 ${t.wrap}`}>
-      <p className={`text-sm font-semibold ${t.title}`}>{title}</p>
-      <p className={`mt-1 text-xs leading-relaxed ${t.desc}`}>{description}</p>
-    </div>
-  );
-}
-
+// New Th/Td component to integrate Tailwind classes easier
 function Th({
-  children,
-  align = "left",
-}: {
-  children: ReactNode;
-  align?: "left" | "right";
-}) {
-  return (
-    <th
-      className={`px-4 py-3 text-xs font-semibold uppercase tracking-wide ${
-        align === "right" ? "text-right" : "text-left"
-      }`}
-    >
-      {children}
-    </th>
-  );
-}
+    children,
+    align = "left",
+    className = "",
+  }: {
+    children: ReactNode;
+    align?: "left" | "right";
+    className?: string;
+  }) {
+    return (
+      <th
+        className={`px-4 py-3 text-xs font-semibold uppercase tracking-wide whitespace-nowrap ${
+          align === "right" ? "text-right" : "text-left"
+        } ${className}`}
+      >
+        {children}
+      </th>
+    );
+  }
 
 function Td({
   children,
   align = "left",
   colSpan,
+  className = "",
 }: {
   children: ReactNode;
   align?: "left" | "right";
   colSpan?: number;
+  className?: string;
 }) {
   return (
     <td
       colSpan={colSpan}
-      className={`px-4 py-3 text-zinc-700 ${
+      className={`px-4 py-3 text-zinc-700 align-top ${
         align === "right" ? "text-right" : "text-left"
-      }`}
+      } ${className}`}
     >
       {children}
     </td>
   );
 }
+
+// Card and InfoCard components are intentionally left out of the main export
+// to keep the focus on the main DashboardPage component and its responsiveness.

@@ -4,7 +4,6 @@ import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import type { Anggota } from "@/types/admin/anggota";
-import { useGetCurrentUserQuery } from "@/services/auth.service";
 import { useGetAnggotaByIdQuery } from "@/services/admin/anggota.service";
 import { skipToken } from "@reduxjs/toolkit/query";
 import Image from "next/image";
@@ -105,9 +104,12 @@ export function KTACard({
 
   // 1) Kalau memberId tidak ada, ambil dari user yang login
   const meShouldSkip = Boolean(memberId || dataOverride);
-  const { data: meData } = useGetCurrentUserQuery(
-    meShouldSkip ? skipToken : undefined
-  );
+  // Dummy data untuk meData
+  const meData: MeData = {
+    name: "Dummy User",
+    anggota_id: 12345,
+    anggota: { id: 12345 },
+  };
   const me = (meData as MeData) ?? undefined;
 
   const meAnggotaId: number | string | undefined =

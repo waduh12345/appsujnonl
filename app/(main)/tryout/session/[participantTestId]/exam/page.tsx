@@ -122,6 +122,7 @@ export default function ExamPage() {
     const isSmallScreen = window.innerWidth < 1024;
 
     // kalau bukan mobile/tablet dan layarnya cukup besar → pakai guard
+    // Kriteria: Layar besar DAN BUKAN mobile/tablet user agent
     if (!isMobileOrTablet && !isSmallScreen) {
       setUseGuard(true);
     } else {
@@ -382,17 +383,18 @@ export default function ExamPage() {
 
   const hasTimer = endAtRef.current > 0;
   const timerString = hasTimer ? formatHMS(remaining) : null;
-  const timerDanger = hasTimer && remaining <= 60;
+  const timerDanger = hasTimer && remaining <= 300; // 5 menit terakhir
 
   // ====== RIGHT NAV BADGES ======
   const navBadges = flat.map((q, i) => {
     const isActive = i === idx;
-    const answered = (q.user_answer ?? "").length > 0;
+    // Jawaban dianggap terisi jika bukan null atau string kosong
+    const answered = (q.user_answer ?? "").trim().length > 0;
     const flagged = !!q.is_flagged;
 
     let cls =
-      "rounded-lg px-2 py-1 text-xs font-semibold ring-1 transition select-none";
-    if (isActive) cls += " bg-sky-600 text-white ring-sky-500 shadow-sm";
+      "rounded-lg px-2 py-1 text-xs font-semibold ring-1 transition select-none h-10 w-10 flex items-center justify-center";
+    if (isActive) cls += " bg-sky-600 text-white ring-sky-500 shadow-lg scale-105";
     else if (flagged) cls += " bg-yellow-100 text-yellow-800 ring-yellow-300";
     else if (answered) cls += " bg-sky-100 text-sky-700 ring-sky-300";
     else cls += " bg-zinc-50 text-zinc-700 ring-zinc-200";
@@ -406,40 +408,49 @@ export default function ExamPage() {
 
   // ====== CONTENT UTAMA (tanpa guard) ======
   const content = (
-    <div className="space-y-6">
-      {/* Top bar */}
-      <div className="flex items-center justify-between">
-        <Link href="/tryout" className="text-sm text-zinc-600 hover:underline">
-          &larr; Kembali ke Tryout
+    <div className="min-h-screen p-4 md:p-6 bg-zinc-50">
+      {/* Top bar (Fixed di mobile untuk navigasi cepat) */}
+      <header className="sticky top-0 z-10 mb-4 bg-white shadow-sm rounded-xl p-3 flex items-center justify-between flex-wrap gap-3">
+        <Link href="/tryout" className="text-sm text-zinc-600 flex items-center gap-1 hover:underline">
+          <ChevronLeft className="h-4 w-4" /> Kembali
         </Link>
 
         <div className="flex items-center gap-3">
-          <div className="text-sm text-zinc-500">
+          <div className="text-sm font-medium text-zinc-700 hidden sm:block">
             {testDetails?.title ?? data?.test?.test_details?.title ?? "Tryout"}
           </div>
 
           {hasTimer && (
             <Badge
               variant="outline"
-              className={`flex items-center gap-2 border-2 ${
+              className={`flex items-center gap-2 border-2 text-sm md:text-base px-3 py-1 ${
                 timerDanger
-                  ? "border-red-400 text-red-600"
-                  : "border-sky-300 text-sky-700"
+                  ? "border-red-400 text-red-600 bg-red-50"
+                  : "border-sky-300 text-sky-700 bg-sky-50"
               }`}
             >
               <Clock3 className="h-4 w-4" />
-              <span className="tabular-nums font-mono">{timerString}</span>
+              <span className="tabular-nums font-mono font-semibold">{timerString}</span>
             </Badge>
           )}
         </div>
 
-        <div />
-      </div>
-
-      {/* Layout: left content + right aside */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_280px]">
-        {/* Left */}
-        <section className="rounded-3xl border bg-white p-6 shadow-sm">
+        <Button
+          onClick={handleFinishCategory}
+          disabled={endingCat || endingSess}
+          className="rounded-xl bg-sky-600 hover:bg-sky-700 flex items-center gap-1"
+          size="sm"
+        >
+          <CheckCircle2 className="h-4 w-4" />
+          Selesaikan
+        </Button>
+      </header>
+      
+      {/* Layout: Content (Main) + Aside (Right/Bottom) */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_300px]">
+        
+        {/* Left (Main Content) */}
+        <section className="order-1 rounded-3xl border bg-white p-4 shadow-lg md:p-6">
           {(loadingCat || loadingTest) && !data ? (
             <div className="flex h-40 items-center justify-center text-zinc-500">
               <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -450,46 +461,39 @@ export default function ExamPage() {
           ) : (
             <>
               {/* Header action */}
-              <div className="mb-5 flex items-center justify-between">
-                <div className="text-sm text-sky-700">
-                  Soal {idx + 1} / {flat.length}
+              <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b pb-3">
+                <div className="text-lg font-semibold text-sky-700">
+                  Soal ke-{idx + 1} / {flat.length}
                 </div>
-                <div className="flex items-center gap-2">
-                  <Badge
-                    variant="outline"
-                    className={
-                      current.is_flagged
-                        ? "bg-yellow-200 text-yellow-800"
-                        : "bg-zinc-50"
-                    }
-                  >
-                    {current.is_flagged ? "Ditandai" : "Tidak ditandai"}
-                  </Badge>
-                  <Button
-                    variant="outline"
-                    onClick={() => handleFlag(!current.is_flagged)}
-                    disabled={flagging}
-                    className={
-                      current.is_flagged
-                        ? "border-yellow-500 text-yellow-700"
-                        : undefined
-                    }
-                  >
-                    <Flag className="mr-2 h-4 w-4" />
-                    {current.is_flagged ? "Hapus Tanda" : "Tandai Soal"}
-                  </Button>
+                <div className="flex flex-wrap items-center gap-2">
                   <Button
                     variant="outline"
                     onClick={handleReset}
                     disabled={resetting}
+                    size="sm"
+                    className="rounded-lg border-zinc-200 text-zinc-700"
                   >
                     Reset Jawaban
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => handleFlag(!current.is_flagged)}
+                    disabled={flagging}
+                    size="sm"
+                    className={`rounded-lg ${
+                      current.is_flagged
+                        ? "border-yellow-500 bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
+                        : "border-zinc-200 text-zinc-700 hover:bg-zinc-50"
+                    }`}
+                  >
+                    <Flag className="mr-2 h-4 w-4" />
+                    {current.is_flagged ? "Hapus Tanda" : "Tandai Soal"}
                   </Button>
                 </div>
               </div>
 
               {/* Pertanyaan */}
-              <div className="prose prose-sm max-w-none">
+              <div className="prose prose-sm md:prose max-w-none mb-6">
                 <RichTextView html={(current.question_details as QuestionDetails).question} />
               </div>
 
@@ -503,96 +507,67 @@ export default function ExamPage() {
                 />
               </div>
 
-              {/* Nav Prev/Next */}
-              <div className="mt-8 flex items-center justify-between">
-                {!isFirst ? (
-                  <Button
-                    variant="outline"
-                    onClick={() => setIdx((v) => v - 1)}
-                  >
-                    <ChevronLeft className="mr-2 h-4 w-4" />
-                    Sebelumnya
-                  </Button>
-                ) : (
-                  <div />
-                )}
-                {!isLast && (
-                  <Button
-                    variant="outline"
-                    onClick={() => setIdx((v) => v + 1)}
-                  >
-                    Selanjutnya
-                    <ChevronRight className="ml-2 h-4 w-4" />
-                  </Button>
-                )}
+              {/* Nav Prev/Next (Fixed di bottom mobile) */}
+              <div className="mt-8 flex items-center justify-between border-t pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setIdx((v) => v - 1)}
+                  disabled={isFirst}
+                  className="rounded-xl border-sky-200 text-sky-700 w-full mr-2"
+                >
+                  <ChevronLeft className="mr-2 h-4 w-4" />
+                  Sebelumnya
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setIdx((v) => v + 1)}
+                  disabled={isLast}
+                  className="rounded-xl border-sky-200 text-sky-700 w-full ml-2"
+                >
+                  Selanjutnya
+                  <ChevronRight className="ml-2 h-4 w-4" />
+                </Button>
               </div>
             </>
           )}
         </section>
 
-        {/* Right (sticky aside) */}
-        <aside className="top-24 h-max rounded-3xl border bg-white p-4 shadow-sm lg:sticky">
-          {/* Big Timer */}
-          {hasTimer && (
-            <div
-              className={`mb-4 rounded-2xl border p-4 text-center ${
-                timerDanger
-                  ? "border-red-200 bg-red-50"
-                  : "border-sky-200 bg-sky-50"
-              }`}
-            >
-              <div className="mb-1 text-xs font-semibold text-zinc-600">
-                Sisa Waktu
-              </div>
-              <div className="flex items-center justify-center gap-2">
-                <Clock3
-                  className={
-                    timerDanger
-                      ? "h-5 w-5 text-red-600"
-                      : "h-5 w-5 text-sky-700"
-                  }
-                />
-                <div
-                  className={`font-mono text-2xl tabular-nums ${
-                    timerDanger ? "text-red-700" : "text-sky-800"
-                  }`}
-                >
-                  {timerString}
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="mb-3 text-sm font-semibold text-zinc-700">
-            Sudah Selesai?
+        {/* Right (Navigasi & Ringkasan) */}
+        <aside className="order-2 lg:order-2 lg:sticky lg:top-24 h-max rounded-3xl border bg-white p-4 shadow-lg">
+          
+          <div className="mb-2 text-base font-semibold text-zinc-700">
+            Peta Navigasi
           </div>
-          <Button
-            onClick={handleFinishCategory}
-            disabled={endingCat || endingSess}
-            className="mb-4 w-full justify-center gap-2 rounded-xl bg-sky-600 hover:bg-sky-700"
-          >
-            <CheckCircle2 className="h-4 w-4" />
-            Selesaikan Sesi
-          </Button>
+          <div className="mb-4 grid grid-cols-5 gap-2">{navBadges}</div>
 
-          <div className="mb-2 text-xs font-semibold text-zinc-600">
-            Nomor Soal
-          </div>
-          <div className="grid grid-cols-5 gap-2">{navBadges}</div>
-
-          <div className="mt-4 space-y-2 text-[11px] text-zinc-500">
+          <div className="mt-4 border-t pt-4 space-y-2 text-sm text-zinc-500">
+            <div className="font-semibold text-zinc-700">Keterangan:</div>
             <div>
-              <span className="mr-2 inline-block h-3 w-3 rounded bg-sky-200" />
+              <span className="mr-2 inline-block h-3 w-3 rounded-md bg-sky-200" />
               Terjawab
             </div>
             <div>
-              <span className="mr-2 inline-block h-3 w-3 rounded bg-yellow-300" />
+              <span className="mr-2 inline-block h-3 w-3 rounded-md bg-yellow-300" />
               Ditandai
             </div>
             <div>
-              <span className="mr-2 inline-block h-3 w-3 rounded bg-zinc-200" />
+              <span className="mr-2 inline-block h-3 w-3 rounded-md bg-zinc-200" />
               Kosong
             </div>
+          </div>
+          
+          <div className="mt-6 border-t pt-4">
+            <div className="mb-3 text-sm font-semibold text-zinc-700">
+              Akhiri Sesi
+            </div>
+            <Button
+              onClick={handleFinishCategory}
+              disabled={endingCat || endingSess}
+              className="w-full justify-center gap-2 rounded-xl bg-red-600 hover:bg-red-700"
+            >
+              <CheckCircle2 className="h-4 w-4" />
+              Selesaikan Ujian
+            </Button>
           </div>
         </aside>
       </div>
@@ -704,6 +679,7 @@ function MCControl({
   );
 
   useEffect(() => {
+    // Sinkronisasi state saat soal berubah
     setValue(
       multiple ? (initial ? initial.split(",") : []) : initial ? [initial] : []
     );
@@ -724,12 +700,16 @@ function MCControl({
         return (
           <label
             key={o.option}
-            className="flex cursor-pointer items-start gap-3 rounded-xl border px-3 py-2 hover:bg-zinc-50"
+            className={`flex cursor-pointer items-start gap-3 rounded-xl border px-3 py-3 transition ${
+              checked ? "border-sky-500 bg-sky-50 shadow-sm" : "border-zinc-200 hover:bg-zinc-50"
+            }`}
           >
             <input
               type={multiple ? "checkbox" : "radio"}
               name={name}
-              className="mt-1"
+              className={`mt-1 h-5 w-5 ${
+                multiple ? "rounded text-sky-600" : "text-sky-600"
+              }`}
               checked={checked}
               onChange={() => {
                 if (multiple) {
@@ -742,17 +722,21 @@ function MCControl({
                   apply([o.option]);
                 }
               }}
+              disabled={saving}
             />
-            <RichTextView html={o.text} />
+            <div className="prose prose-sm max-w-none">
+                <RichTextView html={o.text} />
+            </div>
           </label>
         );
       })}
 
       <Button
-        className="mt-2 rounded-xl bg-sky-600 hover:bg-sky-700"
+        className="mt-4 rounded-xl bg-sky-600 hover:bg-sky-700 w-full sm:w-auto"
         onClick={() => onSubmit(multiple ? value.join(",") : value[0] ?? "")}
         disabled={saving}
       >
+        {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
         Simpan Jawaban
       </Button>
     </div>
@@ -776,17 +760,19 @@ function EssayControl({
   return (
     <div>
       <textarea
-        className="min-h-[140px] w-full rounded-xl border p-3 focus:outline-none focus:ring-2 focus:ring-sky-300"
+        className="min-h-[160px] w-full rounded-xl border border-zinc-300 p-4 focus:outline-none focus:ring-2 focus:ring-sky-300 transition"
         placeholder="Tulis jawaban..."
         value={text}
         onChange={(e) => setText(e.target.value)}
         onBlur={() => onSubmit(text)} // autosave saat keluar field
+        disabled={saving}
       />
       <Button
-        className="mt-3 rounded-xl bg-sky-600 hover:bg-sky-700"
+        className="mt-3 rounded-xl bg-sky-600 hover:bg-sky-700 w-full sm:w-auto"
         onClick={() => onSubmit(text)}
         disabled={saving}
       >
+        {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
         Simpan Jawaban
       </Button>
     </div>
@@ -833,31 +819,35 @@ function CategorizedControl({
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {options.map((o, i) => {
         const name = `cat-${questionId}-${i}`;
         return (
-          <div key={i} className="rounded-xl border p-3">
+          <div key={i} className="rounded-xl border border-zinc-300 p-4">
             <SanitizedHtml
-              className="prose prose-sm max-w-none"
+              className="prose prose-sm max-w-none text-zinc-700"
               html={o.text}
             />
-            <div className="mt-2 flex items-center gap-5">
-              <label className="inline-flex items-center gap-2">
+            <div className="mt-3 flex flex-wrap items-center gap-5 pt-2 border-t border-zinc-100">
+              <label className="inline-flex items-center gap-2 cursor-pointer">
                 <input
                   type="radio"
                   name={name}
                   checked={choices[i] === "accurate"}
                   onChange={() => setAndSave(i, "accurate")}
+                  disabled={saving}
+                  className="text-sky-600"
                 />
                 Akurat
               </label>
-              <label className="inline-flex items-center gap-2">
+              <label className="inline-flex items-center gap-2 cursor-pointer">
                 <input
                   type="radio"
                   name={name}
                   checked={choices[i] === "not_accurate"}
                   onChange={() => setAndSave(i, "not_accurate")}
+                  disabled={saving}
+                  className="text-sky-600"
                 />
                 Tidak Akurat
               </label>
@@ -867,10 +857,11 @@ function CategorizedControl({
       })}
 
       <Button
-        className="rounded-xl bg-sky-600 hover:bg-sky-700"
+        className="rounded-xl bg-sky-600 hover:bg-sky-700 w-full sm:w-auto"
         onClick={() => onSubmit(choices.join(","))}
         disabled={saving}
       >
+        {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
         Simpan Jawaban
       </Button>
     </div>

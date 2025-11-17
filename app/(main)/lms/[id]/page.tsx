@@ -24,6 +24,7 @@ import {
   Sparkles,
   Info,
   Filter,
+  X, // Import icon X untuk clear search
 } from "lucide-react";
 
 /* ========= Type-safe keys ========= */
@@ -119,6 +120,12 @@ export default function LmsDetailPage() {
     refetch();
   };
 
+  const onClearSearch = () => {
+    setSearch("");
+    setPage(1);
+    refetch();
+  };
+
   // client-side filter by type
   const filteredRows = useMemo(() => {
     if (typeFilter === "all") return rows;
@@ -139,26 +146,26 @@ export default function LmsDetailPage() {
 
   return (
     <div className="min-h-screen bg-[radial-gradient(ellipse_at_top_left,rgba(14,165,233,0.06),transparent_40%),radial-gradient(ellipse_at_bottom_right,rgba(99,102,241,0.06),transparent_40%)]">
-      <div className="mx-auto w-full max-w-6xl px-4 py-8">
+      <div className="mx-auto w-full max-w-6xl px-4 py-6 md:py-8">
         {/* ===== Hero header ===== */}
         <motion.section
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2 }}
-          className="relative overflow-hidden rounded-3xl border border-sky-100 bg-gradient-to-br from-sky-500 via-sky-600 to-sky-700 p-1 shadow-md"
+          className="relative overflow-hidden rounded-3xl border border-sky-100 bg-gradient-to-br from-sky-500 via-sky-600 to-sky-700 p-1 shadow-lg"
         >
           <div className="rounded-[22px] bg-white/10 p-4 backdrop-blur-sm md:p-6">
             <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
               <div className="flex items-start gap-3">
-                <div className="inline-grid h-12 w-12 place-items-center rounded-2xl bg-white/15 text-white ring-1 ring-white/30">
-                  <BookOpen className="h-6 w-6" />
+                <div className="inline-grid h-10 w-10 place-items-center rounded-xl bg-white/15 text-white ring-1 ring-white/30 md:h-12 md:w-12">
+                  <BookOpen className="h-5 w-5 md:h-6 md:w-6" />
                 </div>
-                <div className="text-white">
-                  <h1 className="text-xl font-semibold md:text-2xl">
+                <div className="text-white min-w-0">
+                  <h1 className="truncate text-xl font-semibold md:text-2xl">
                     {loadingLms ? "Memuat…" : lmsInfo?.title ?? `LMS #${lmsId}`}
                   </h1>
                   {lmsInfo?.sub_title && (
-                    <p className="text-sm/6 text-sky-100">
+                    <p className="text-sm/6 text-sky-100 truncate">
                       {lmsInfo.sub_title}
                     </p>
                   )}
@@ -180,7 +187,7 @@ export default function LmsDetailPage() {
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
-                  className="rounded-xl border-white/30 bg-white/10 text-white hover:bg-white/20"
+                  className="w-full md:w-auto rounded-xl border-white/30 bg-white/10 text-white hover:bg-white/20"
                   onClick={() => router.push("/lms")}
                 >
                   <ArrowLeft className="mr-2 h-4 w-4" /> Kembali
@@ -189,57 +196,72 @@ export default function LmsDetailPage() {
             </div>
 
             {/* Search & filter bar */}
-            <div className="mt-4 rounded-2xl border border-white/20 bg-white/10 p-3 backdrop-blur">
+            <div className="mt-4 rounded-xl border border-white/20 bg-white/10 p-3 backdrop-blur md:rounded-2xl">
               <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                <div className="relative w-full md:max-w-md">
-                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/80" />
-                  <Input
-                    className="rounded-xl border-white/20 bg-white/15 pl-9 text-white placeholder:text-white/70 focus-visible:ring-white/50"
-                    placeholder="Cari judul/slug detail…"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && onSearch()}
-                  />
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="inline-flex items-center gap-1 rounded-lg border border-white/25 bg-white/10 px-2.5 py-1 text-xs text-white/90">
-                    <Filter className="h-3.5 w-3.5" /> Filter tipe:
-                  </span>
-
-                  {(
-                    [
-                      ["all", "Semua"],
-                      ["video", `Video (${countsByType.video})`],
-                      ["audio", `Audio (${countsByType.audio})`],
-                      ["pdf", `PDF (${countsByType.pdf})`],
-                      ["image", `Gambar (${countsByType.image})`],
-                      ["external_link", `Link (${countsByType.external_link})`],
-                    ] as [typeof typeFilter, string][]
-                  ).map(([key, label]) => {
-                    const active = typeFilter === key;
-                    return (
+                
+                {/* Search Input & Button */}
+                <div className="flex w-full gap-2 md:max-w-md">
+                  <div className="relative flex-1">
+                    <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/80" />
+                    <Input
+                      className="rounded-xl border-white/20 bg-white/15 pl-9 pr-8 text-white placeholder:text-white/70 focus-visible:ring-white/50"
+                      placeholder="Cari judul/slug detail…"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && onSearch()}
+                    />
+                    {search && (
                       <button
-                        key={key}
-                        onClick={() => setTypeFilter(key)}
-                        className={
-                          active
-                            ? "rounded-full bg-white px-3 py-1 text-xs font-semibold text-sky-700 shadow-sm"
-                            : "rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs text-white/90 backdrop-blur hover:bg-white/20"
-                        }
+                        type="button"
+                        onClick={onClearSearch}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 text-white/80 hover:text-white"
+                        aria-label="Bersihkan pencarian"
                       >
-                        {label}
+                        <X className="h-4 w-4" />
                       </button>
-                    );
-                  })}
-
+                    )}
+                  </div>
                   <Button
-                    variant="outline"
-                    className="rounded-xl border-white/30 bg-white/10 text-white hover:bg-white/20"
+                    className="shrink-0 rounded-xl bg-white/20 text-white hover:bg-white/30"
                     onClick={onSearch}
                   >
                     Cari
                   </Button>
+                </div>
+
+                {/* Filter Chips */}
+                <div className="flex flex-col gap-2 md:flex-row md:items-center">
+                  <span className="inline-flex items-center gap-1 rounded-lg border border-white/25 bg-white/10 px-2.5 py-1 text-xs text-white/90 shrink-0">
+                    <Filter className="h-3.5 w-3.5" /> Filter tipe:
+                  </span>
+
+                  <div className="flex flex-wrap gap-2">
+                    {(
+                      [
+                        ["all", "Semua"],
+                        ["video", `Video (${countsByType.video})`],
+                        ["audio", `Audio (${countsByType.audio})`],
+                        ["pdf", `PDF (${countsByType.pdf})`],
+                        ["image", `Gambar (${countsByType.image})`],
+                        ["external_link", `Link (${countsByType.external_link})`],
+                      ] as [typeof typeFilter, string][]
+                    ).map(([key, label]) => {
+                      const active = typeFilter === key;
+                      return (
+                        <button
+                          key={key}
+                          onClick={() => setTypeFilter(key)}
+                          className={
+                            active
+                              ? "rounded-full bg-white px-3 py-1 text-xs font-semibold text-sky-700 shadow-sm whitespace-nowrap"
+                              : "rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs text-white/90 backdrop-blur hover:bg-white/20 whitespace-nowrap"
+                          }
+                        >
+                          {label}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             </div>
@@ -249,7 +271,7 @@ export default function LmsDetailPage() {
         {/* ===== List Detail ===== */}
         <section className="mt-6">
           {loadingList && rows.length === 0 ? (
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {Array.from({ length: 4 }).map((_, i) => (
                 <div
                   key={i}
@@ -258,9 +280,9 @@ export default function LmsDetailPage() {
                   <div className="flex items-start gap-3">
                     <div className="h-12 w-12 animate-pulse rounded-2xl bg-sky-100" />
                     <div className="w-full">
-                      <div className="h-5 w-2/3 animate-pulse rounded bg-zinc-200" />
-                      <div className="mt-2 h-4 w-1/2 animate-pulse rounded bg-zinc-200" />
-                      <div className="mt-3 h-9 w-28 animate-pulse rounded bg-zinc-200" />
+                      <div className="h-5 w-full animate-pulse rounded bg-zinc-200" />
+                      <div className="mt-2 h-4 w-2/3 animate-pulse rounded bg-zinc-200" />
+                      <div className="mt-4 h-9 w-full animate-pulse rounded-xl bg-zinc-200" />
                     </div>
                   </div>
                 </div>
@@ -270,20 +292,20 @@ export default function LmsDetailPage() {
             <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-sky-200 bg-white p-8 text-center text-zinc-600">
               <Info className="h-5 w-5 text-sky-600" />
               <p className="text-sm">
-                Tidak ada konten yang cocok dengan pencarian / filter.
+                Tidak ada konten yang cocok dengan pencarian atau filter yang diterapkan.
               </p>
-              <div className="flex gap-2">
+              {typeFilter !== "all" && (
                 <Button
                   variant="outline"
-                  className="rounded-xl border-sky-200 text-sky-700"
+                  className="rounded-xl border-sky-200 text-sky-700 hover:bg-sky-50"
                   onClick={() => setTypeFilter("all")}
                 >
-                  Hapus Filter
+                  Hapus Filter ({typeFilter})
                 </Button>
-              </div>
+              )}
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2"> {/* Kurangi gap di mobile */}
               <AnimatePresence initial={false}>
                 {filteredRows.map((d) => {
                   const key = d.type as TypeKey;
@@ -296,16 +318,16 @@ export default function LmsDetailPage() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -8 }}
                       transition={{ duration: 0.18 }}
-                      className="group relative overflow-hidden rounded-2xl border border-sky-100 bg-white p-4 shadow-sm ring-1 ring-transparent transition hover:shadow-md hover:ring-sky-100/80"
+                      className="group relative overflow-hidden rounded-2xl border border-sky-100 bg-white p-4 shadow-md ring-1 ring-transparent transition hover:shadow-lg hover:ring-sky-100/80"
                     >
                       <div className="flex min-w-0 items-start gap-3">
                         <div
-                          className={`mt-0.5 grid h-12 w-12 place-items-center rounded-2xl ring-1 ${theme.iconWrap}`}
+                          className={`mt-0.5 grid h-10 w-10 place-items-center rounded-xl ring-1 ${theme.iconWrap} md:h-12 md:w-12 md:rounded-2xl`}
                         >
                           {TypeIcon[key]}
                         </div>
 
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                           <h3 className="line-clamp-2 text-base font-semibold text-zinc-900">
                             {d.title}
                           </h3>
@@ -317,7 +339,7 @@ export default function LmsDetailPage() {
 
                           <div className="mt-2 flex flex-wrap items-center gap-2">
                             <span
-                              className={`inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-[11px] font-medium text-zinc-700 ring-1 ${theme.wrap}`}
+                              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium text-zinc-700 ring-1 ${theme.wrap}`}
                             >
                               <Sparkles className="h-3.5 w-3.5" />
                               <span className="capitalize">
@@ -325,12 +347,12 @@ export default function LmsDetailPage() {
                               </span>
                             </span>
 
-                            <span className="text-xs text-zinc-500">
+                            <span className="text-xs text-zinc-500 hidden sm:inline">
                               Dibuat: {fmtDate(d.created_at)}
                             </span>
 
                             {key === "external_link" && d.link && (
-                              <span className="truncate text-xs text-zinc-500">
+                              <span className="truncate text-xs text-zinc-500 block max-w-full">
                                 • {d.link}
                               </span>
                             )}
@@ -340,7 +362,7 @@ export default function LmsDetailPage() {
 
                       <div className="mt-4">
                         <Button
-                          className="w-full rounded-xl bg-sky-500 font-medium hover:bg-sky-600"
+                          className="w-full rounded-xl bg-sky-600 font-medium hover:bg-sky-700"
                           onClick={() => router.push(`/lms/view/${d.id}`)}
                           title="Lihat materi"
                         >
@@ -359,24 +381,24 @@ export default function LmsDetailPage() {
 
           {/* Pager */}
           {detailsPage?.last_page && detailsPage.last_page > 1 && (
-            <div className="mt-6 flex items-center justify-center gap-3">
+            <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
               <Button
                 variant="outline"
-                className="rounded-xl border-sky-200 text-sky-700"
+                className="w-full sm:w-auto rounded-xl border-sky-200 text-sky-700 hover:bg-sky-50"
                 disabled={!canPrev}
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
               >
                 Sebelumnya
               </Button>
-              <div className="rounded-lg border border-sky-200 bg-white px-3 py-1 text-sm text-sky-700">
-                {detailsPage.current_page} / {detailsPage.last_page} •{" "}
+              <div className="rounded-xl border border-sky-200 bg-white px-3 py-1.5 text-sm font-medium text-sky-700 shadow-sm">
+                Halaman {detailsPage.current_page} / {detailsPage.last_page} •{" "}
                 <span className="text-zinc-600">
                   {filteredRows.length} dari {rows.length} item
                 </span>
               </div>
               <Button
                 variant="outline"
-                className="rounded-xl border-sky-200 text-sky-700"
+                className="w-full sm:w-auto rounded-xl border-sky-200 text-sky-700 hover:bg-sky-50"
                 disabled={!canNext}
                 onClick={() => setPage((p) => Math.min(lastPage, p + 1))}
               >

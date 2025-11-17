@@ -12,6 +12,7 @@ import {
   Image as ImageIcon,
   ChevronRight,
   BookCopy,
+  X, // Import icon X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -28,7 +29,8 @@ function Badge({
       {children}
     </span>
   ) : (
-    <span className="inline-flex items-center rounded-full bg-white px-2.5 py-1 text-xs text-sky-700 ring-1 ring-sky-200">
+    // Disesuaikan agar lebih kontras di atas background putih
+    <span className="inline-flex items-center rounded-full bg-white px-2.5 py-1 text-xs font-medium text-zinc-600 ring-1 ring-zinc-300">
       {children}
     </span>
   );
@@ -37,7 +39,7 @@ function Badge({
 /** Cover seragam tinggi tetap, tanpa ruang kosong (object-cover) */
 function CardCover({ src, alt }: { src?: string | null; alt: string }) {
   return (
-    <div className="relative h-44 w-full overflow-hidden rounded-t-2xl bg-sky-50">
+    <div className="relative h-36 w-full overflow-hidden rounded-t-2xl bg-sky-50 md:h-44"> {/* Tinggi sedikit dikurangi di mobile */}
       {src ? (
         <img
           src={src}
@@ -48,7 +50,7 @@ function CardCover({ src, alt }: { src?: string | null; alt: string }) {
         />
       ) : (
         <div className="flex h-full w-full items-center justify-center text-sky-600/70">
-          <ImageIcon className="h-8 w-8" />
+          <ImageIcon className="h-7 w-7 md:h-8 md:w-8" />
         </div>
       )}
       {/* overlay halus */}
@@ -60,34 +62,34 @@ function CardCover({ src, alt }: { src?: string | null; alt: string }) {
 /* ====== Skeleton untuk Suspense ====== */
 function PageSkeleton() {
   return (
-    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top_left,rgba(14,165,233,0.06),transparent_40%),radial-gradient(ellipse_at_bottom_right,rgba(99,102,241,0.06),transparent_40%)]">
-      <div className="mx-auto w-full max-w-6xl px-4 py-8">
-        <header className="mb-6 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+    <div className="min-h-screen p-4 md:p-0 bg-[radial-gradient(ellipse_at_top_left,rgba(14,165,233,0.06),transparent_40%),radial-gradient(ellipse_at_bottom_right,rgba(99,102,241,0.06),transparent_40%)]">
+      <div className="mx-auto w-full max-w-6xl py-6">
+        <header className="mb-6 flex flex-col gap-4">
           <div className="flex items-center gap-3">
-            <div className="inline-grid h-11 w-11 place-items-center rounded-xl bg-sky-200" />
+            <div className="inline-grid h-10 w-10 place-items-center rounded-xl bg-sky-200 md:h-11 md:w-11" />
             <div>
-              <div className="h-6 w-48 rounded bg-zinc-200" />
-              <div className="mt-2 h-4 w-64 rounded bg-zinc-200" />
+              <div className="h-5 w-40 rounded bg-zinc-200 md:h-6 md:w-48" />
+              <div className="mt-1 h-3 w-56 rounded bg-zinc-200 md:mt-2 md:h-4 md:w-64" />
             </div>
           </div>
-          <div className="flex w-full max-w-lg gap-2 md:w-auto">
-            <div className="relative w-full">
-              <div className="h-10 w-full rounded-xl bg-zinc-200" />
+          <div className="flex w-full max-w-lg gap-2">
+            <div className="relative flex-1">
+              <div className="h-9 w-full rounded-xl bg-zinc-200 md:h-10" />
             </div>
-            <div className="h-10 w-16 rounded-xl bg-zinc-200" />
+            <div className="h-9 w-14 rounded-xl bg-zinc-200 md:h-10 md:w-16" />
           </div>
         </header>
-        <div className="grid gap-5 grid-cols-2">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
               className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-sm"
             >
-              <div className="h-44 w-full animate-pulse bg-zinc-200" />
+              <div className="h-36 w-full animate-pulse bg-zinc-200 md:h-44" />
               <div className="p-4">
                 <div className="h-5 w-2/3 animate-pulse rounded bg-zinc-200" />
                 <div className="mt-2 h-4 w-1/2 animate-pulse rounded bg-zinc-200" />
-                <div className="mt-4 h-9 w-28 animate-pulse rounded bg-zinc-200" />
+                <div className="mt-4 h-9 w-full animate-pulse rounded bg-zinc-200" /> {/* Tombol full width */}
               </div>
             </div>
           ))}
@@ -105,11 +107,9 @@ function LmsPageInner() {
   const [page, setPage] = useState(1);
   const [paginate] = useState(12);
 
-  // sinkron dengan ?search= dari URL
   const urlQuery = searchParams.get("search") ?? "";
   const [search, setSearch] = useState(urlQuery);
 
-  // setiap URL berubah (mis. dari header search), sync ke state & reset page
   useEffect(() => {
     setSearch(urlQuery);
     setPage(1);
@@ -126,16 +126,20 @@ function LmsPageInner() {
   const pushSearch = () => {
     const term = search.trim();
     router.push(term ? `/lms?search=${encodeURIComponent(term)}` : "/lms");
-    // RTK Query otomatis refetch karena state 'search' akan bereaksi lewat effect urlQuery
+  };
+
+  const clearSearch = () => {
+    setSearch("");
+    router.push("/lms");
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen p-4 md:p-0"> {/* Tambahkan padding global */}
       <div className="mx-auto w-full max-w-6xl py-6">
         {/* Header */}
-        <header className="mb-6 flex flex-col gap-3 gap-4 justify-between">
+        <header className="mb-6 flex flex-col gap-4"> {/* Stack di mobile */}
           <div className="flex items-center gap-3">
-            <div className="inline-grid h-11 w-11 place-items-center rounded-xl bg-sky-500 text-white ring-1 ring-sky-200">
+            <div className="inline-grid h-10 w-10 place-items-center rounded-xl bg-sky-500 text-white ring-1 ring-sky-200 md:h-11 md:w-11">
               <BookOpen className="h-5 w-5" />
             </div>
             <div>
@@ -148,70 +152,69 @@ function LmsPageInner() {
             </div>
           </div>
 
-          <div className="flex w-full max-w-lg gap-2 md:w-auto">
-            <div className="relative w-full border border-sky-500 rounded-xl">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sky-600/70" />
-              <input
-                type="text"
-                placeholder="Cari judul materi…"
-                aria-label="Cari materi"
-                className="w-full rounded-xl border-sky-200 pl-9 pr-9 py-2 focus-visible:ring-sky-400"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && pushSearch()}
-              />
-              {/* tombol clear kecil */}
-              {search && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSearch("");
-                    router.push("/lms");
-                  }}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md bg-white px-2 text-xs text-sky-700 ring-1 ring-sky-200 hover:bg-sky-50"
-                  aria-label="Bersihkan"
-                >
-                  ×
-                </button>
-              )}
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-end"> {/* Kontrol search di mobile: stack dan full width */}
+            <div className="flex w-full max-w-lg gap-2">
+              <div className="relative w-full rounded-xl">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sky-600/70" />
+                <input
+                  type="text"
+                  placeholder="Cari judul materi…"
+                  aria-label="Cari materi"
+                  className="w-full rounded-xl border border-sky-300 pl-9 pr-10 py-2 text-sm focus:border-sky-500 focus:ring-sky-500"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && pushSearch()}
+                />
+                {/* Tombol clear yang lebih bersih dan ikonik */}
+                {search && (
+                  <button
+                    type="button"
+                    onClick={clearSearch}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 text-zinc-500 hover:text-sky-700"
+                    aria-label="Bersihkan pencarian"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+              <Button
+                onClick={pushSearch}
+                className="shrink-0 rounded-xl bg-sky-500 font-medium hover:bg-sky-600"
+              >
+                Cari
+              </Button>
             </div>
-            <Button
-              onClick={pushSearch}
-              className="rounded-xl bg-sky-500 hover:bg-sky-600"
-            >
-              Cari
-            </Button>
           </div>
         </header>
 
-        {/* Grid */}
+        {/* Grid Konten */}
         <section>
           {isFetching && rows.length === 0 ? (
-            <div className="grid grid-cols-2 gap-5">
-              {Array.from({ length: 6 }).map((_, i) => (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"> {/* Layout grid responsif */}
+              {Array.from({ length: paginate }).slice(0, 6).map((_, i) => (
                 <div
                   key={i}
                   className="overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-sm"
                 >
-                  <div className="h-44 w-full animate-pulse bg-zinc-200" />
+                  <div className="h-36 w-full animate-pulse bg-zinc-200 md:h-44" />
                   <div className="p-4">
                     <div className="h-5 w-2/3 animate-pulse rounded bg-zinc-200" />
                     <div className="mt-2 h-4 w-1/2 animate-pulse rounded bg-zinc-200" />
-                    <div className="mt-4 h-9 w-28 animate-pulse rounded bg-zinc-200" />
+                    <div className="mt-4 h-9 w-full animate-pulse rounded bg-zinc-200" />
                   </div>
                 </div>
               ))}
             </div>
           ) : rows.length === 0 ? (
             <div className="rounded-2xl border border-sky-100 bg-white p-6 text-center text-zinc-600">
-              Tidak ada materi.
+              Tidak ada materi yang ditemukan untuk pencarian &quot;{urlQuery}&quot;.
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {rows.map((item) => (
                 <article
                   key={item.id}
-                  className="group overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-sm transition hover:shadow-md"
+                  className="group overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-md transition hover:shadow-lg"
                 >
                   <CardCover
                     src={typeof item.cover === "string" ? item.cover : ""}
@@ -219,7 +222,8 @@ function LmsPageInner() {
                   />
 
                   <div className="p-4">
-                    <h3 className="line-clamp-2 min-h-[48px] text-base font-semibold text-zinc-900">
+                    {/* Minimal height for clean layout */}
+                    <h3 className="line-clamp-2 min-h-[40px] text-base font-semibold text-zinc-900 md:min-h-[48px]">
                       {item.title}
                     </h3>
                     {item.sub_title && (
@@ -240,7 +244,7 @@ function LmsPageInner() {
                     <div className="mt-4">
                       <Button
                         asChild
-                        className="w-full rounded-xl bg-sky-500 font-medium hover:bg-sky-600"
+                        className="w-full rounded-xl bg-sky-600 font-medium hover:bg-sky-700"
                       >
                         <Link
                           href={`/lms/${item.id}`}
@@ -260,21 +264,21 @@ function LmsPageInner() {
 
         {/* Pagination sederhana (next/prev) */}
         {data?.last_page && data.last_page > 1 && (
-          <div className="mt-8 flex items-center justify-center gap-3">
+          <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Button
               variant="outline"
-              className="rounded-xl border-sky-200 text-sky-700"
+              className="w-full sm:w-auto rounded-xl border-sky-200 text-sky-700 hover:bg-sky-50"
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
             >
               Sebelumnya
             </Button>
-            <div className="rounded-lg border border-sky-200 bg-white px-3 py-1 text-sm text-sky-700">
-              {data.current_page} / {data.last_page}
+            <div className="rounded-xl border border-sky-200 bg-white px-3 py-1.5 text-sm font-medium text-sky-700 shadow-sm">
+              Halaman {data.current_page} dari {data.last_page}
             </div>
             <Button
               variant="outline"
-              className="rounded-xl border-sky-200 text-sky-700"
+              className="w-full sm:w-auto rounded-xl border-sky-200 text-sky-700 hover:bg-sky-50"
               disabled={page >= data.last_page}
               onClick={() =>
                 setPage((p) => Math.min(data.last_page ?? p, p + 1))

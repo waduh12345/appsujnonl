@@ -62,10 +62,10 @@ export const authOptions: AuthOptions = {
           email_verified_at: user.email_verified_at,
           created_at: user.created_at,
           updated_at: user.updated_at,
-          anggota: user.anggota,
+          anggota: "anggota" in user ? user.anggota : null,
           roles: user.roles,
-          refferal: user.refferal,
-          referrer: user.referrer,
+          refferal: "refferal" in user ? user.refferal : null,
+          referrer: "referrer" in user ? user.referrer : null,
         };
       },
     }),
@@ -87,14 +87,14 @@ export const authOptions: AuthOptions = {
           user as unknown as { updated_at: string }
         ).updated_at;
         token.anggota = (
-          user as unknown as { anggota: User["anggota"] }
+          user as unknown as { anggota: "" }
         ).anggota;
         token.roles = (user as unknown as { roles: User["roles"] }).roles;
         token.refferal = (
-          user as unknown as { refferal: User["refferal"] }
+          user as unknown as { refferal: "" }
         ).refferal;
         token.referrer = (
-          user as unknown as { referrer: User["referrer"] }
+          user as unknown as { referrer: "" }
         ).referrer;
       }
       return token;
@@ -110,10 +110,10 @@ export const authOptions: AuthOptions = {
           | null;
         session.user.created_at = token.created_at as string;
         session.user.updated_at = token.updated_at as string;
-        session.user.anggota = token.anggota as User["anggota"];
+        session.user.anggota = token.anggota as "";
         session.user.roles = token.roles as User["roles"];
-        session.user.refferal = token.refferal as User["refferal"];
-        session.user.referrer = token.referrer as User["referrer"];
+        session.user.refferal = token.refferal as "";
+        session.user.referrer = token.referrer as "";
       }
       return session;
     },
