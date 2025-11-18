@@ -21,7 +21,7 @@ export function Logo({ className = "" }: { className?: string }) {
         </svg>
       </div>
       <div className="flex flex-col">
-        <span className="text-lg font-bold text-foreground leading-none">Digital KTA</span>
+        <span className="text-lg font-bold text-foreground leading-none">Masbettet</span>
         <span className="text-xs text-muted-foreground leading-none">Kartu Anggota</span>
       </div>
     </div>

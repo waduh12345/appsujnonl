@@ -119,8 +119,8 @@ export default function ReferalPage() {
               onClick={() => {
                 if (navigator.share) {
                   navigator.share({
-                    title: "Gabung Digital KTA",
-                    text: "Bergabunglah dengan Digital KTA menggunakan kode referal saya!",
+                    title: "Gabung Masbettet",
+                    text: "Bergabunglah dengan Masbettet menggunakan kode referal saya!",
                     url: referralLink,
                   });
                 }

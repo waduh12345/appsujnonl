@@ -1,7 +1,7 @@
 {
-  "name": "Digital KTA - Digitalisasi Manajemen Keanggotaan",
-  "short_name": "Digital KTA",
-  "description": "Aplikasi untuk digitalisasi manajemen keanggotaan koperasi: pendaftaran, transaksi, dan dashboard.",
+  "name": "Masbettet - Aplikasi Ujian Online",
+  "short_name": "Masbettet",
+  "description": "Aplikasi Ujian Online0 Mas Bettet",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

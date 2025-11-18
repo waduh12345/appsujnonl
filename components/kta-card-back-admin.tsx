@@ -142,8 +142,8 @@ export default function KTACardBack({ reference, userId, qrPayload }: Props) {
         <div className="w-2/3 pr-3 overflow-hidden">
           <h3 className="font-semibold mb-2">Ketentuan Keanggotaan</h3>
           <ul className="text-xs leading-snug list-disc pl-5 opacity-90 space-y-1">
-            <li>Anggota wajib menjaga kerahasiaan data Digital KTA.</li>
-            <li>Kartu hanya digunakan untuk keperluan resmi Digital KTA.</li>
+            <li>Anggota wajib menjaga kerahasiaan data Masbettet.</li>
+            <li>Kartu hanya digunakan untuk keperluan resmi Masbettet.</li>
             <li>Segera laporkan kehilangan atau penyalahgunaan ke admin.</li>
           </ul>
         </div>

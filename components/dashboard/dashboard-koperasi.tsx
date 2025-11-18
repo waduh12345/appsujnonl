@@ -220,7 +220,7 @@ export default function DashboardPartaiPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
-            Dashboard Digital KTA
+            Dashboard Masbettet
           </h1>
           <p className="text-sm text-gray-500 mt-1">
             Ringkasan data keanggotaan dan infrastruktur
