@@ -58,10 +58,10 @@ export default function LoginPage() {
       <Card className="border-border shadow-xl">
         <CardHeader className="space-y-2">
           <div className="mx-auto w-16 h-16 bg-sky-500 rounded-2xl flex items-center justify-center shadow-lg">
-            <img src="/icon-qubic.jpg" alt="Qubic Logo" className="w-8 h-8" />
+            <img src="/masbettet-logo.webp" alt="Qubic Logo" className="w-8 h-8" />
           </div>
           <CardTitle className="text-2xl font-bold text-center text-sky-600">
-            CBT Qubic
+            Ujian Online - Masbettet
           </CardTitle>
           <CardDescription className="text-center text-sky-400">
             Masuk ke akun Anda untuk melanjutkan

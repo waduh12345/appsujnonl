@@ -17,11 +17,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CBT Qubic",
-  description:
-    "Aplikasi ujian online untuk sekolah",
+  title: "Ujian Online - Masbettet",
+  description: "Aplikasi ujian online untuk sekolah",
   icons: {
-    icon: "/icon-qubic.jpg",
+    icon: "/masbettet-logo.webp",
   },
 };
 
