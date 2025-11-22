@@ -447,7 +447,7 @@ export default function ExamPage() {
       </header>
       
       {/* Layout: Content (Main) + Aside (Right/Bottom) */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_300px]">
+      <div className="grid grid-cols-1 gap-6">
         
         {/* Left (Main Content) */}
         <section className="order-1 rounded-3xl border bg-white p-4 shadow-lg md:p-6">
@@ -513,7 +513,7 @@ export default function ExamPage() {
                   variant="outline"
                   onClick={() => setIdx((v) => v - 1)}
                   disabled={isFirst}
-                  className="rounded-xl border-sky-200 text-sky-700 w-full mr-2"
+                  className="rounded-xl border-sky-200 text-sky-700 w-1/2 mr-2"
                 >
                   <ChevronLeft className="mr-2 h-4 w-4" />
                   Sebelumnya
@@ -522,7 +522,7 @@ export default function ExamPage() {
                   variant="outline"
                   onClick={() => setIdx((v) => v + 1)}
                   disabled={isLast}
-                  className="rounded-xl border-sky-200 text-sky-700 w-full ml-2"
+                  className="rounded-xl border-sky-200 text-sky-700 w-1/2 ml-2"
                 >
                   Selanjutnya
                   <ChevronRight className="ml-2 h-4 w-4" />

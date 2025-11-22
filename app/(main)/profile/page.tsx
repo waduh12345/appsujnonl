@@ -10,7 +10,6 @@ import {
   CalendarClock,
   User2,
   GraduationCap,
-  // Printer dihapus
 } from "lucide-react";
 
 import { useGetMeQuery } from "@/services/auth.service";
@@ -96,14 +95,12 @@ function Row({
   icon?: React.ReactNode;
 }) {
   return (
-    // Penyesuaian grid untuk mobile (grid-cols-1)
     <div className="grid grid-cols-1 gap-1 border-b border-zinc-100 py-3 last:border-0 md:grid-cols-[220px,1fr]">
       <div className="flex items-center gap-2 text-sm font-medium text-zinc-600">
         {icon ? <span className="text-zinc-500">{icon}</span> : null}
         {label}
       </div>
-      {/* Di mobile, children akan berada di baris berikutnya */}
-      <div className="text-zinc-900 md:col-start-2">{children}</div>
+      <div className="text-zinc-900">{children}</div>
     </div>
   );
 }
@@ -123,11 +120,6 @@ function StudentCard({ me }: { me: Me }) {
   const name = me.name ?? "—";
   const kelas = s?.class_name ?? s?.class?.name ?? "—";
   const prodi = s?.school_name ?? s?.school?.name ?? "—";
-  const sesi = s?.session ?? "—";
-  const ruang = s?.room ?? "—";
-  const pwd = s?.password ?? "—";
-
-  // Fungsi dan variabel cetak dihapus
 
   return (
     <section className="rounded-2xl bg-white/90 p-4 ring-1 ring-zinc-200 shadow-sm md:col-span-2">
@@ -136,14 +128,13 @@ function StudentCard({ me }: { me: Me }) {
           <GraduationCap className="h-5 w-5 text-sky-600" />
           <h2 className="text-lg font-semibold">Kartu Siswa</h2>
         </div>
-        {/* Tombol Cetak dihapus */}
       </div>
 
       {/* Preview kartu di halaman */}
       <div className="overflow-hidden rounded-2xl border-2 border-border/70 bg-background shadow-sm">
-        <div className="relative bg-gradient-to-r from-sky-600 to-cyan-500 px-4 py-3 text-white">
+        <div className="relative bg-gradient-to-r from-green-800 to-green-500 px-4 py-3 text-white">
           <div className="absolute left-3 top-2 flex h-10 w-10 items-center justify-center rounded-lg bg-white/20 ring-1 ring-white/30 text-xs font-extrabold tracking-wider">
-            ID
+            <img src="/masbettet-logo.webp" alt="Logo" width="52" height="52" />
           </div>
           <div className="text-center ml-auto">
             <div className="text-base font-extrabold tracking-wide">
@@ -162,14 +153,11 @@ function StudentCard({ me }: { me: Me }) {
                 {[
                   ["Nama", name],
                   ["NIM", nim],
-                  ["Password", String(pwd)],
                   ["Sekolah", String(prodi)],
                   ["Kelas", String(kelas)],
-                  ["Sesi / Ruang", `${sesi} / ${ruang}`],
                 ].map(([k, v]) => (
                   <div
                     key={k}
-                    // Dibuat lebih responsif untuk mobile
                     className="mb-2 grid grid-cols-2 items-baseline gap-3 sm:grid-cols-[130px_1fr]"
                   >
                     <div className="text-xs text-muted-foreground">{k}</div>
@@ -200,13 +188,11 @@ function StudentCard({ me }: { me: Me }) {
 export default function ProfilePage() {
   const { data, isLoading, isError, refetch } = useGetMeQuery();
 
-  // aman: kompatibel dengan tipe User service, namun siap baca student bila backend kirim
   const me = data as unknown as Me | undefined;
 
   return (
-    <div className="min-h-screen p-4 md:p-0"> {/* Tambahkan padding di mobile */}
+    <div className="min-h-screen p-4 md:p-0">
       <div className="mx-auto w-full max-w-5xl py-6">
-        {/* Header */}
         <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-3">
             <div className="inline-grid h-12 w-12 place-items-center rounded-xl bg-sky-500 text-white ring-1 ring-sky-200">
@@ -219,18 +205,16 @@ export default function ProfilePage() {
               </p>
             </div>
           </div>
-          {/* Ubah tata letak tombol Muat Ulang agar responsif */}
           <div className="flex justify-start md:justify-end">
             <button
               onClick={() => refetch()}
-              className="rounded-lg bg-white px-3 py-2 text-sm font-medium text-sky-700 ring-1 ring-sky-200 hover:bg-sky-50"
+              className="rounded-lg bg-white px-2 py-1 text-xs font-medium text-sky-700 ring-1 ring-sky-200 hover:bg-sky-50"
             >
               Muat Ulang
             </button>
           </div>
         </div>
 
-        {/* States */}
         {isLoading ? (
           <Skeleton />
         ) : isError ? (
@@ -242,9 +226,8 @@ export default function ProfilePage() {
             Data profil tidak tersedia.
           </div>
         ) : (
-          // Grid berubah dari dua kolom menjadi satu kolom di mobile
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-[1.2fr,1fr]">
-            {/* Kartu utama */}
+          <div className="flex flex-col gap-6">
+            {me.student ? <StudentCard me={me} /> : null}
             <section className="rounded-2xl bg-white/90 p-4 ring-1 ring-zinc-200 shadow-sm md:p-5">
               <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                 <h2 className="text-lg font-semibold">Informasi Akun</h2>
@@ -296,7 +279,6 @@ export default function ProfilePage() {
               </div>
             </section>
 
-            {/* Data siswa */}
             <section className="rounded-2xl bg-white/90 p-4 ring-1 ring-zinc-200 shadow-sm md:p-5">
               <div className="mb-4 flex items-center gap-2">
                 <GraduationCap className="h-5 w-5 text-sky-600" />
@@ -326,9 +308,6 @@ export default function ProfilePage() {
                 </div>
               )}
             </section>
-
-            {/* Kartu Siswa (tetap satu kolom penuh di mobile dan desktop) */}
-            {me.student ? <StudentCard me={me} /> : null}
           </div>
         )}
       </div>
@@ -340,8 +319,7 @@ export default function ProfilePage() {
 function Skeleton() {
   const line = "h-4 w-full animate-pulse rounded bg-zinc-200";
   return (
-    // Penyesuaian grid untuk mobile
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-[1.2fr,1fr]">
+    <div className="flex flex-col gap-6">
       <div className="rounded-2xl bg-white/90 p-5 ring-1 ring-zinc-200">
         <div className="mb-4 flex items-center justify-between">
           <div className="h-6 w-40 animate-pulse rounded bg-zinc-200" />

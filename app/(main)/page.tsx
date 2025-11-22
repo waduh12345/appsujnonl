@@ -6,6 +6,7 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { useGetParticipantHistoryListQuery } from "@/services/student/tryout.service";
 import type { ParticipantHistoryItem } from "@/types/student/tryout";
 import { useSession } from "next-auth/react";
+import { displayDate } from "@/lib/format-utils";
 
 const CARD_STYLES = `
   /* ===================== BASE & PRINT ===================== */
@@ -37,8 +38,8 @@ const CARD_STYLES = `
   /* ===================== HEADER ===================== */
   .student-card-header {
     padding: 16px 20px; /* Reduced padding */
-    background: linear-gradient(120deg, #f97316 0%, #f59e0b 24%, #2563eb 68%, #1d4ed8 100%);
-    background-color: #2563eb;
+    background: linear-gradient(120deg, #006400 0%, #228b22 100%);  /* Hijau gelap dan terang */
+    background-color: #006400;
     color: #f9fafb;
     display: flex;
     align-items: center;
@@ -55,7 +56,7 @@ const CARD_STYLES = `
     width: 48px; /* Reduced size */
     height: 48px; /* Reduced size */
     border-radius: 12px; /* Adjusted border radius */
-    background: linear-gradient(135deg, #facc15 0%, #f97316 40%, #ea580c 80%);
+    background: linear-gradient(135deg, #52b788 0%, #004d00 40%, #006400 80%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -114,8 +115,7 @@ const CARD_STYLES = `
   /* ===================== BODY ===================== */
   .student-card-body {
     padding: 16px 20px 14px 20px; /* Reduced padding */
-    background: radial-gradient(130% 140% at 0% 0%, #fff7ed 0%, #ffffff 55%, #e0f2fe 100%);
-    background-color: #fff7ed;
+    background: #e2f3e2;  /* Latar hijau muda */
   }
   .student-card-box {
     border-radius: 14px; /* Adjusted border radius */
@@ -170,8 +170,8 @@ const CARD_STYLES = `
     width: 85px; /* Reduced size */
     height: 105px; /* Reduced size */
     border-radius: 16px; /* Adjusted border radius */
-    background: linear-gradient(150deg, #0ea5e9 0%, #2563eb 45%, #1e40af 80%);
-    background-color: #2563eb;
+    background: linear-gradient(150deg, #006400 0%, #228b22 45%);  /* Hijau gelap dan terang */
+    background-color: #006400;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -329,22 +329,6 @@ const CARD_STYLES = `
   }
 `;
 
-/** ===== Utils ===== */
-function formatDateTime(iso?: string | null): string {
-  if (!iso) return "—";
-  try {
-    const d = new Date(iso);
-    return new Intl.DateTimeFormat("id-ID", {
-      dateStyle: "long",
-      timeStyle: "medium",
-      timeZone: "Asia/Jakarta",
-    }).format(d);
-  } catch {
-    return iso ?? "—";
-  }
-}
-
-/** ===== Page ===== */
 export default function DashboardPage() {
   const { data: session } = useSession();
   const user = session?.user;
@@ -358,7 +342,7 @@ export default function DashboardPage() {
     name: user?.name ?? "Nama Peserta",
     email: user?.email ?? "email@example.com",
     class_name: "XII IPA 1",
-    school_name: "SMAN 1 Jakarta",
+    school_name: "MA Miftahululum Bettet Pamekasan",
     session: "Sesi 1",
     room: "R. 101",
     password: "PASS123",
@@ -397,8 +381,8 @@ export default function DashboardPage() {
       <div className="flex min-h-screen items-center justify-center p-4">
         <div className="rounded-2xl border bg-white/80 px-5 py-4 text-center shadow-sm">
           <p className="text-sm text-zinc-700">
-            Kamu belum masuk. Silakan login agar data dashboard dapat dimuat dari
-            session.
+            Kamu belum masuk. Silakan login agar data dashboard dapat dimuat
+            dari session.
           </p>
         </div>
       </div>
@@ -406,7 +390,9 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen p-4 md:p-0"> {/* Tambahkan padding di mobile */}
+    <div className="min-h-screen p-4 md:p-0">
+      {" "}
+      {/* Tambahkan padding di mobile */}
       <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-6 py-6">
         {/* Welcome Header */}
         <div>
@@ -428,13 +414,19 @@ export default function DashboardPage() {
           <div className="pt-4">
             <h2 className="text-lg font-semibold mb-3">Kartu Peserta Ujian</h2>
             <style dangerouslySetInnerHTML={{ __html: CARD_STYLES }} />
-
             {/* Student Card Component */}
             <div className="student-card-root">
               <div className="student-card-inner">
                 <div className="student-card-header">
                   <div className="student-card-header-left">
-                    <div className="student-card-logo">EDU</div>
+                    <div className="student-card-logo">
+                      <img
+                        src="/masbettet-logo.webp"
+                        alt="Logo"
+                        width="52"
+                        height="52"
+                      />
+                    </div>
                     <div className="student-card-school-block">
                       <div className="student-card-school-name">
                         {student.school_name}
@@ -453,7 +445,6 @@ export default function DashboardPage() {
                       <span>RESMI • UJIAN SEKOLAH</span>
                     </div>
                   </div>
-                  <div className="student-card-header-watermark"></div>
                 </div>
 
                 <div className="student-card-body">
@@ -516,10 +507,6 @@ export default function DashboardPage() {
                             Foto 3x4
                           </div>
                         </div>
-                        <div className="student-card-idchip">
-                          <span>Nomor Peserta</span>
-                          <strong>{student.nim}</strong>
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -528,8 +515,8 @@ export default function DashboardPage() {
                 <div className="student-card-footer">
                   <div className="student-card-note">
                     Harap kartu ini dibawa dan ditunjukkan kepada pengawas pada
-                    saat ujian berlangsung. Kartu berlaku untuk seluruh rangkaian
-                    ujian pada Tahun Pelajaran 2023/2024.
+                    saat ujian berlangsung. Kartu berlaku untuk seluruh
+                    rangkaian ujian pada Tahun Pelajaran 2023/2024.
                   </div>
                   <div className="student-card-signature">
                     <div className="student-card-signature-label">
@@ -559,8 +546,12 @@ export default function DashboardPage() {
               <thead>
                 <tr className="bg-sky-50/60 text-zinc-700">
                   <Th align="left">Test</Th>
-                  <Th align="left" className="hidden sm:table-cell">Mulai</Th>
-                  <Th align="left" className="hidden sm:table-cell">Selesai</Th>
+                  <Th align="left" className="hidden sm:table-cell">
+                    Mulai
+                  </Th>
+                  <Th align="left" className="hidden sm:table-cell">
+                    Selesai
+                  </Th>
                   <Th align="left">Status</Th>
                 </tr>
               </thead>
@@ -622,14 +613,14 @@ export default function DashboardPage() {
                           </span>
                           {/* Tampilkan waktu mulai di mobile */}
                           <div className="text-xs text-zinc-500 mt-0.5 sm:hidden">
-                            {formatDateTime(r.start_date)}
+                            {displayDate(r.start_date)}
                           </div>
                         </Td>
                         <Td className="hidden sm:table-cell">
-                          {formatDateTime(r.start_date)}
+                          {displayDate(r.start_date)}
                         </Td>
                         <Td className="hidden sm:table-cell">
-                          {formatDateTime(r.end_date ?? r.updated_at ?? null)}
+                          {displayDate(r.end_date ?? r.updated_at ?? null)}
                         </Td>
                         <Td>
                           <span
@@ -659,24 +650,24 @@ export default function DashboardPage() {
 
 // New Th/Td component to integrate Tailwind classes easier
 function Th({
-    children,
-    align = "left",
-    className = "",
-  }: {
-    children: ReactNode;
-    align?: "left" | "right";
-    className?: string;
-  }) {
-    return (
-      <th
-        className={`px-4 py-3 text-xs font-semibold uppercase tracking-wide whitespace-nowrap ${
-          align === "right" ? "text-right" : "text-left"
-        } ${className}`}
-      >
-        {children}
-      </th>
-    );
-  }
+  children,
+  align = "left",
+  className = "",
+}: {
+  children: ReactNode;
+  align?: "left" | "right";
+  className?: string;
+}) {
+  return (
+    <th
+      className={`px-4 py-3 text-xs font-semibold uppercase tracking-wide whitespace-nowrap ${
+        align === "right" ? "text-right" : "text-left"
+      } ${className}`}
+    >
+      {children}
+    </th>
+  );
+}
 
 function Td({
   children,
@@ -700,6 +691,3 @@ function Td({
     </td>
   );
 }
-
-// Card and InfoCard components are intentionally left out of the main export
-// to keep the focus on the main DashboardPage component and its responsiveness.
