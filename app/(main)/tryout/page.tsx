@@ -161,7 +161,7 @@ export default function TryoutListPage() {
       </section>
 
       {/* Grid Cards */}
-      <section className="grid grid-cols-2 gap-6"> {/* Ubah ke 1 kolom di mobile, 2 di sm, 3 di lg */}
+      <section className="grid grid-cols-1 gap-6"> {/* Ubah ke 1 kolom di mobile, 2 di sm, 3 di lg */}
         
         {/* Shimmer/Loading State */}
         {loadingAll && !items.length
